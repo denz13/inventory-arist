@@ -1,0 +1,142 @@
+
+.zcalendar {
+
+}
+
+.zcalendar .main {
+
+}
+
+.zcalendar .header {
+	background: #fff;
+	position: relative;
+}
+
+.zcalendar .zc-btn-ns, .zcalendar .zc-btn {
+	cursor: pointer;
+	padding: 0.5rem 1rem;
+}
+
+.zcalendar .zc-btn {
+	background: #2c3e50;
+	color: #f0f0f0;
+}
+
+.zcalendar .zc-btn-group {
+	background: #2c3e50;
+	border-radius: 3px;
+	display: inline-block;
+}
+.zcalendar .zc-btn-group:hover, .zcalendar .zc-btn:hover {
+	background: #18222c;
+}
+
+.zc-border-radius {
+	border-radius: 1px;
+}
+
+.zc-color-white {
+	color: #f0f0f0;
+}
+
+.zcalendar .header .rl {
+	text-align: left;
+	vertical-align: middle;
+	width: 20%;
+}
+
+.zcalendar .header .rm {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.zcalendar .header .rr {
+	text-align: right;
+	vertical-align: middle;
+	width: 20%;
+}
+
+.zcalendar .header .title {
+	font-size: 1.4rem;
+	color: #2c3e50;
+	cursor: pointer;
+}
+
+.zcalendar .header .title-input-date {
+	display: inline-block;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+	position: absolute;
+	z-index: 100;
+	top: 0;
+	margin-top: 1.4rem;
+	margin-left: -6rem;
+}
+
+.zcalendar table, .zcalendar .tbl {
+	padding: 0px;
+	margin: 0px;
+}
+
+.zcalendar .body {
+	margin-top: 1rem;
+}
+
+.zcalendar .body .zc-calendar {
+
+}
+.zcalendar .body .zc-calendar th, .zcalendar .body .zc-calendar td {
+	padding: 0px;
+	margin: 0px;
+}
+
+.zcalendar .body .zc-calendar thead th {
+	border: 1px solid #f0f0f0;
+	text-align: center;
+	vertical-align: middle;
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
+	cursor: pointer;
+}
+
+.zcalendar .body .zc-calendar tbody td {
+	position: relative;
+	border: 1px solid #f0f0f0;
+	text-align: center;
+	vertical-align: top;
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
+	min-height: 5rem;
+	height: 5rem;
+	cursor: pointer;
+}
+
+.zcalendar .body .zc-calendar tbody td:hover {
+	background: #fafafa;
+}
+
+.zcalendar .body .zc-calendar tbody td .day, .zcalendar .body .zc-calendar tbody td .day-o {
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-size: 0.9rem;
+	margin-top: 4px;
+	margin-right: 6px;
+}
+
+.zcalendar .body .zc-calendar tbody td .day-o {
+	color: #e5e7eb;
+}
+
+.zcalendar .body .zc-calendar .current-day-r {
+	background: #ebf0f5;
+}
+.zcalendar .body .zc-calendar .current-day-r:hover {
+	background: #ebf0f5;
+}
+
+.zcalendar .body .zc-calendar .current-day-selected-r {
+	background: #fafafa;
+}
