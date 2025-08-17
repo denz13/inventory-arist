@@ -2,7 +2,7 @@
 <nav class="side-nav">
                 <a href="{{ route('home') }}" class="intro-x flex items-center pl-5 pt-4">
                     <img alt="Midone - HTML Admin Template" class="w-6" src="dist/images/logo.svg">
-                    <span class="hidden xl:block text-white text-lg ml-3"> Rubick </span> 
+                    <span class="hidden xl:block text-white text-lg ml-3"> Inventory </span> 
                 </a>
                 <div class="side-nav__devider my-6"></div>
                 <ul>
@@ -21,7 +21,7 @@
                                     <div class="side-menu__title"> Overview </div>
                                 </a>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a href="#" class="side-menu">
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                     <div class="side-menu__title"> Analytics </div>
@@ -38,7 +38,7 @@
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                     <div class="side-menu__title"> Statistics </div>
                                 </a>
-                            </li>
+                            </li> -->
                         </ul>
                     </li>
                     <li>
@@ -56,7 +56,7 @@
                                     <div class="side-menu__title"> Add Inventory </div>
                                 </a>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a href="#" class="side-menu">
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                     <div class="side-menu__title"> Simple Menu </div>
@@ -67,25 +67,25 @@
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                     <div class="side-menu__title"> Top Menu </div>
                                 </a>
-                            </li>
+                            </li> -->
                         </ul>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="javascript:;" class="side-menu" data-menu="ecommerce">
                             <div class="side-menu__icon"> <i data-lucide="shopping-bag"></i> </div>
                             <div class="side-menu__title">
-                                E-Commerce 
+                                Clients
                                 <div class="side-menu__sub-icon"> <i data-lucide="chevron-down"></i> </div>
                             </div>
                         </a>
                         <ul class="">
                             <li>
-                                <a href="#" class="side-menu">
+                                <a href="{{ route('ledger.index') }}" class="side-menu">
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
-                                    <div class="side-menu__title"> Categories </div>
+                                    <div class="side-menu__title"> LEDGER </div>
                                 </a>
-                            </li>
-                            <li>
+                            </li> -->
+                            <!-- <li>
                                 <a href="#" class="side-menu">
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                     <div class="side-menu__title"> Add Product </div>
@@ -165,10 +165,10 @@
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                     <div class="side-menu__title"> Reviews </div>
                                 </a>
-                            </li>
+                            </li> -->
                         </ul>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="#" class="side-menu">
                             <div class="side-menu__icon"> <i data-lucide="inbox"></i> </div>
                             <div class="side-menu__title"> Inbox </div>
@@ -256,8 +256,8 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <li>
+                    </li> -->
+                    <!-- <li>
                         <a href="javascript:;" class="side-menu" data-menu="profile">
                             <div class="side-menu__icon"> <i data-lucide="trello"></i> </div>
                             <div class="side-menu__title">
@@ -459,8 +459,8 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <li class="side-nav__devider my-6"></li>
+                    </li> -->
+                    <!-- <li class="side-nav__devider my-6"></li>
                     <li>
                         <a href="javascript:;" class="side-menu" data-menu="components">
                             <div class="side-menu__icon"> <i data-lucide="inbox"></i> </div>
@@ -694,7 +694,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> -->
                     <li class="side-nav__devider my-6"></li>
                     <li>
                         <a href="{{ route('logout') }}" class="side-menu">

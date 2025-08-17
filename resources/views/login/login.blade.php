@@ -31,16 +31,16 @@ License: You must have a valid license purchased only from themeforest(the above
                 <div class="hidden xl:flex flex-col min-h-screen">
                     <a href="" class="-intro-x flex items-center pt-5">
                         <img alt="Midone - HTML Admin Template" class="w-6" src="dist/images/logo.svg">
-                        <span class="text-white text-lg ml-3"> Icewall </span> 
+                        <span class="text-white text-lg ml-3"> Inventory Management System </span> 
                     </a>
                     <div class="my-auto">
-                        <img alt="Midone - HTML Admin Template" class="-intro-x w-1/2 -mt-16" src="dist/images/illustration.svg">
-                        <div class="-intro-x text-white font-medium text-4xl leading-tight mt-10">
-                            A few more clicks to 
+                        <img alt="Midone - HTML Admin Template" class="-intro-x w-1/2 -mt-16" src="assets/images/logo.png">
+                        <div class="-intro-x text-white font-medium text-3xl leading-tight mt-10">
+                            Welcome to ARIST GARAGE
                             <br>
-                            sign in to your account.
+                            Please sign in to your account.
                         </div>
-                        <div class="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400">Manage all your e-commerce accounts in one place</div>
+                        <!-- <div class="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400">Manage all your e-commerce accounts in one place</div> -->
                     </div>
                 </div>
                 <!-- END: Login Info -->
@@ -124,14 +124,28 @@ License: You must have a valid license purchased only from themeforest(the above
                         // Get CSRF token from meta tag
                         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                         
+                        // Log the data being sent
+                        const requestData = { 
+                            email, 
+                            password,
+                            remember: document.getElementById('remember-me').checked
+                        };
+                        console.log('Sending login request:', requestData);
+                        console.log('CSRF Token:', csrfToken);
+                        
                         const response = await fetch('{{ route("login.check") }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             },
-                            body: JSON.stringify({ email, password })
+                            body: JSON.stringify({ 
+                                email, 
+                                password,
+                                remember: document.getElementById('remember-me').checked
+                            })
                         });
 
                         console.log('Response status:', response.status);
@@ -141,11 +155,18 @@ License: You must have a valid license purchased only from themeforest(the above
                             const data = await response.json();
                             console.log('Success response:', data);
                             
-                            // Login successful
-                            if (data.redirect) {
-                                window.location.href = data.redirect;
+                            // Check if login was successful
+                            if (data.success) {
+                                // Login successful
+                                if (data.redirect) {
+                                    window.location.href = data.redirect;
+                                } else {
+                                    window.location.href = '/';
+                                }
                             } else {
-                                window.location.href = '/';
+                                // Login failed but response was OK (200)
+                                errorPassword.innerHTML = data.message || 'Login failed. Please check your credentials.';
+                                passwordInput.classList.add('border-danger');
                             }
                         } else {
                             // Try to get error message from response
@@ -153,7 +174,20 @@ License: You must have a valid license purchased only from themeforest(the above
                             
                             try {
                                 const errorData = await response.json();
-                                if (errorData.message) {
+                                console.log('Error response data:', errorData);
+                                
+                                if (response.status === 422) {
+                                    // Validation errors
+                                    if (errorData.errors) {
+                                        const validationErrors = [];
+                                        Object.keys(errorData.errors).forEach(key => {
+                                            validationErrors.push(errorData.errors[key][0]);
+                                        });
+                                        errorMessage = validationErrors.join(', ');
+                                    } else if (errorData.message) {
+                                        errorMessage = errorData.message;
+                                    }
+                                } else if (errorData.message) {
                                     errorMessage = errorData.message;
                                 }
                             } catch (e) {

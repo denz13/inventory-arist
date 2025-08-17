@@ -3,17 +3,17 @@
                     <!-- BEGIN: Breadcrumb -->
                     <nav aria-label="breadcrumb" class="-intro-x mr-auto hidden sm:flex">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="#">Application</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                            <!-- <li class="breadcrumb-item"><a href="#">Application</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Dashboard</li> -->
                         </ol>
                     </nav>
                     <!-- END: Breadcrumb -->
                     <!-- BEGIN: Search -->
                     <div class="intro-x relative mr-3 sm:mr-6">
-                        <div class="search hidden sm:block">
+                        <!-- <div class="search hidden sm:block">
                             <input type="text" class="search__input form-control border-transparent" placeholder="Search...">
                             <i data-lucide="search" class="search__icon dark:text-slate-500"></i> 
-                        </div>
+                        </div> -->
                         <a class="notification sm:hidden" href=""> <i data-lucide="search" class="notification__icon dark:text-slate-500"></i> </a>
                         <div class="search-result">
                             <div class="search-result__content">
@@ -98,7 +98,7 @@
                     <!-- END: Search -->
                     <!-- BEGIN: Notifications -->
                     <div class="intro-x dropdown mr-auto sm:mr-6">
-                        <div class="dropdown-toggle notification notification--bullet cursor-pointer" role="button" aria-expanded="false" data-tw-toggle="dropdown"> <i data-lucide="bell" class="notification__icon dark:text-slate-500"></i> </div>
+                        <!-- <div class="dropdown-toggle notification notification--bullet cursor-pointer" role="button" aria-expanded="false" data-tw-toggle="dropdown"> <i data-lucide="bell" class="notification__icon dark:text-slate-500"></i> </div> -->
                         <div class="notification-content pt-2 dropdown-menu">
                             <div class="notification-content__box dropdown-content">
                                 <div class="notification-content__title">Notifications</div>
