@@ -3,15 +3,15 @@
 @section('content')
 
 <div class="grid grid-cols-12 gap-6">
-                    <div class="col-span-12 2xl:col-span-9">
+                    <div class="col-span-12 2xl:col-span-12">
                         <div class="grid grid-cols-12 gap-6">
                             <!-- BEGIN: General Report -->
                             <div class="col-span-12 mt-8">
                                 <div class="intro-y flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
-                                        General Report
+                                        Overview
                                     </h2>
-                                    <a href="" class="ml-auto flex items-center text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="refresh-ccw" data-lucide="refresh-ccw" class="lucide lucide-refresh-ccw w-4 h-4 mr-3"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 006 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0015 6.7l3-2.7"></path></svg> Reload Data </a>
+                                    <a href="" class="ml-auto flex items-center text-primary" id="reloadDashboard"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="refresh-ccw" data-lucide="refresh-ccw" class="lucide lucide-refresh-ccw w-4 h-4 mr-3"><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 006 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0015 6.7l3-2.7"></path></svg> Reload Data </a>
                                 </div>
                                 <div class="grid grid-cols-12 gap-6 mt-5">
                                     <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
@@ -20,11 +20,11 @@
                                                 <div class="flex">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="shopping-cart" data-lucide="shopping-cart" class="lucide lucide-shopping-cart report-box__icon text-primary"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> 33% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalItems'] > 0 ? round(($dashboardData['totalItems'] / max($dashboardData['totalItems'], 1)) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">4.710</div>
-                                                <div class="text-base text-slate-500 mt-1">Item Sales</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalItems']) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Total Items</div>
                                             </div>
                                         </div>
                                     </div>
@@ -34,11 +34,11 @@
                                                 <div class="flex">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="credit-card" data-lucide="credit-card" class="lucide lucide-credit-card report-box__icon text-pending"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-danger tooltip cursor-pointer"> 2% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-down" data-lucide="chevron-down" class="lucide lucide-chevron-down w-4 h-4 ml-0.5"><polyline points="6 9 12 15 18 9"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalClients'] > 0 ? round(($dashboardData['activeClients'] / $dashboardData['totalClients']) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">3.721</div>
-                                                <div class="text-base text-slate-500 mt-1">New Orders</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalClients']) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Total Clients</div>
                                             </div>
                                         </div>
                                     </div>
@@ -48,11 +48,11 @@
                                                 <div class="flex">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="monitor" data-lucide="monitor" class="lucide lucide-monitor report-box__icon text-warning"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> 12% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalClients'] > 0 ? round(($dashboardData['activeClients'] / $dashboardData['totalClients']) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">2.149</div>
-                                                <div class="text-base text-slate-500 mt-1">Total Products</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['activeClients']) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Active Clients</div>
                                             </div>
                                         </div>
                                     </div>
@@ -62,19 +62,35 @@
                                                 <div class="flex">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="user" data-lucide="user" class="lucide lucide-user report-box__icon text-success"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> 22% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalInventoryValue'] > 0 ? round(($dashboardData['totalInventoryValue'] / max($dashboardData['totalInventoryValue'], 1)) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">152.040</div>
-                                                <div class="text-base text-slate-500 mt-1">Unique Visitor</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalInventoryValue']) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Total Inventory Value</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                
+                                @if($dashboardData['totalClients'] == 0)
+                                <div class="col-span-12 mt-8">
+                                    <div class="intro-y box p-8 text-center">
+                                        <div class="flex flex-col items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users w-16 h-16 text-slate-400 mb-4"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>
+                                            <h3 class="text-xl font-medium text-slate-600 mb-2">No Clients Found</h3>
+                                            <p class="text-slate-500 mb-4">Get started by adding your first client to the inventory system.</p>
+                                            <a href="{{ route('inventory.index') }}" class="btn btn-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-4 h-4 mr-2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                                Add First Client
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                             <!-- END: General Report -->
                             <!-- BEGIN: Sales Report -->
-                            <div class="col-span-12 lg:col-span-6 mt-8">
+                            <!-- <div class="col-span-12 lg:col-span-6 mt-8">
                                 <div class="intro-y block sm:flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
                                         Sales Report
@@ -116,10 +132,10 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- END: Sales Report -->
                             <!-- BEGIN: Weekly Top Seller -->
-                            <div class="col-span-12 sm:col-span-6 lg:col-span-3 mt-8">
+                            <!-- <div class="col-span-12 sm:col-span-6 lg:col-span-3 mt-8">
                                 <div class="intro-y flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
                                         Weekly Top Seller
@@ -147,10 +163,10 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- END: Weekly Top Seller -->
                             <!-- BEGIN: Sales Report -->
-                            <div class="col-span-12 sm:col-span-6 lg:col-span-3 mt-8">
+                            <!-- <div class="col-span-12 sm:col-span-6 lg:col-span-3 mt-8">
                                 <div class="intro-y flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
                                         Sales Report
@@ -178,10 +194,10 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- END: Sales Report -->
                             <!-- BEGIN: Official Store -->
-                            <div class="col-span-12 xl:col-span-8 mt-6">
+                            <!-- <div class="col-span-12 xl:col-span-8 mt-6">
                                 <div class="intro-y block sm:flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
                                         Official Store
@@ -195,10 +211,10 @@
                                     <div>250 Official stores in 21 countries, click the marker to see location details.</div>
                                     <div class="report-maps mt-5 bg-slate-200 rounded-md" data-center="-6.2425342, 106.8626478" data-sources="/dist/json/location.json" style="position: relative; overflow: hidden;"><div style="height: 100%; width: 100%; position: absolute; top: 0px; left: 0px; background-color: rgb(229, 227, 223);"><div class="gm-err-container"><div class="gm-err-content"><div class="gm-err-icon"><img src="https://maps.gstatic.com/mapfiles/api-3/images/icon_error.png" alt="" draggable="false" style="user-select: none;"></div><div class="gm-err-title">Oops! Something went wrong.</div><div class="gm-err-message">This page didn't load Google Maps correctly. See the JavaScript console for technical details.</div></div></div></div></div>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- END: Official Store -->
                             <!-- BEGIN: Weekly Best Sellers -->
-                            <div class="col-span-12 xl:col-span-4 mt-6">
+                            <!-- <div class="col-span-12 xl:col-span-4 mt-6">
                                 <div class="intro-y flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
                                         Weekly Best Sellers
@@ -255,10 +271,10 @@
                                     </div>
                                     <a href="" class="intro-y w-full block text-center rounded-md py-4 border border-dotted border-slate-400 dark:border-darkmode-300 text-slate-500">View More</a> 
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- END: Weekly Best Sellers -->
                             <!-- BEGIN: General Report -->
-                            <div class="col-span-12 grid grid-cols-12 gap-6 mt-8">
+                            <!-- <div class="col-span-12 grid grid-cols-12 gap-6 mt-8">
                                 <div class="col-span-12 sm:col-span-6 2xl:col-span-3 intro-y">
                                     <div class="box p-5 zoom-in">
                                         <div class="flex items-center">
@@ -317,13 +333,13 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- END: General Report -->
                             <!-- BEGIN: Weekly Top Products -->
                             <div class="col-span-12 mt-6">
                                 <div class="intro-y block sm:flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
-                                        Weekly Top Products
+                                        Recent Clients
                                     </h2>
                                     <div class="flex items-center sm:ml-auto mt-3 sm:mt-0">
                                         <button class="btn box flex items-center text-slate-600 dark:text-slate-300"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="file-text" data-lucide="file-text" class="lucide lucide-file-text hidden sm:block w-4 h-4 mr-2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg> Export to Excel </button>
@@ -334,162 +350,83 @@
                                     <table class="table table-report sm:mt-2">
                                         <thead>
                                             <tr>
-                                                <th class="whitespace-nowrap">IMAGES</th>
-                                                <th class="whitespace-nowrap">PRODUCT NAME</th>
-                                                <th class="text-center whitespace-nowrap">STOCK</th>
+                                                <th class="whitespace-nowrap">CLIENT NAME</th>
+                                                <th class="whitespace-nowrap">ADDRESS</th>
                                                 <th class="text-center whitespace-nowrap">STATUS</th>
+                                                <th class="text-center whitespace-nowrap">ITEMS COUNT</th>
                                                 <th class="text-center whitespace-nowrap">ACTIONS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @forelse($dashboardData['recentClients'] as $client)
                                             <tr class="intro-x">
-                                                <td class="w-40">
-                                                    <div class="flex">
-                                                        <div class="w-10 h-10 image-fit zoom-in">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-12.jpg">
+                                                <td>
+                                                    <div class="flex items-center">
+                                                        <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
+                                                            <span class="text-primary font-medium text-lg">{{ strtoupper(substr($client->client_name, 0, 1)) }}</span>
                                                         </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-6.jpg">
-                                                        </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-13.jpg">
+                                                        <div class="ml-4">
+                                                            <div class="font-medium whitespace-nowrap">{{ $client->client_name }}</div>
+                                                            <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">Client ID: {{ $client->id }}</div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a href="" class="font-medium whitespace-nowrap">Samsung Galaxy S20 Ultra</a> 
-                                                    <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">Smartphone &amp; Tablet</div>
+                                                    <div class="text-slate-500 text-sm">{{ Str::limit($client->address, 50) }}</div>
                                                 </td>
-                                                <td class="text-center">88</td>
-                                                <td class="w-40">
-                                                    <div class="flex items-center justify-center text-success"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Active </div>
+                                                <td class="text-center">
+                                                    <div class="flex items-center justify-center">
+                                                        @if($client->status == 'active')
+                                                            <div class="flex items-center text-success">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Active
+                                                            </div>
+                                                        @else
+                                                            <div class="flex items-center text-danger">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="x-square" data-lucide="x-square" class="lucide lucide-x-square w-4 h-4 mr-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg> {{ ucfirst($client->status) }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="font-medium">{{ $client->items->count() }}</span>
                                                 </td>
                                                 <td class="table-report__action w-56">
                                                     <div class="flex justify-center items-center">
-                                                        <a class="flex items-center mr-3" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-1"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Edit </a>
-                                                        <a class="flex items-center text-danger" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" data-lucide="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Delete </a>
+                                                        <a class="flex items-center mr-3" href="{{ route('inventory.edit', $client->id) }}"> 
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-1"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Edit 
+                                                        </a>
+                                                        <a class="flex items-center text-danger" href="{{ route('ledger.show', $client->id) }}" onclick="showClientDetails({{ $client->id }})"> 
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="eye" data-lucide="eye" class="lucide lucide-eye w-4 h-4 mr-1"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View 
+                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr class="intro-x">
-                                                <td class="w-40">
-                                                    <div class="flex">
-                                                        <div class="w-10 h-10 image-fit zoom-in">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-15.jpg">
-                                                        </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-5.jpg">
-                                                        </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-5.jpg">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <a href="" class="font-medium whitespace-nowrap">Oppo Find X2 Pro</a> 
-                                                    <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">Smartphone &amp; Tablet</div>
-                                                </td>
-                                                <td class="text-center">94</td>
-                                                <td class="w-40">
-                                                    <div class="flex items-center justify-center text-danger"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Inactive </div>
-                                                </td>
-                                                <td class="table-report__action w-56">
-                                                    <div class="flex justify-center items-center">
-                                                        <a class="flex items-center mr-3" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-1"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Edit </a>
-                                                        <a class="flex items-center text-danger" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" data-lucide="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Delete </a>
+                                            @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center py-8 text-slate-500">
+                                                    <div class="flex flex-col items-center">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-inbox w-12 h-12 text-slate-400 mb-3"><polyline points="22,12 18,12 14,15 10,15 6,12 2,12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"></path></svg>
+                                                        <span class="text-lg font-medium">No clients found</span>
+                                                        <span class="text-sm">Start by adding your first client in the inventory section</span>
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr class="intro-x">
-                                                <td class="w-40">
-                                                    <div class="flex">
-                                                        <div class="w-10 h-10 image-fit zoom-in">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-5.jpg">
-                                                        </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-14.jpg">
-                                                        </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-9.jpg">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <a href="" class="font-medium whitespace-nowrap">Nike Tanjun</a> 
-                                                    <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">Sport &amp; Outdoor</div>
-                                                </td>
-                                                <td class="text-center">103</td>
-                                                <td class="w-40">
-                                                    <div class="flex items-center justify-center text-success"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Active </div>
-                                                </td>
-                                                <td class="table-report__action w-56">
-                                                    <div class="flex justify-center items-center">
-                                                        <a class="flex items-center mr-3" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-1"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Edit </a>
-                                                        <a class="flex items-center text-danger" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" data-lucide="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Delete </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr class="intro-x">
-                                                <td class="w-40">
-                                                    <div class="flex">
-                                                        <div class="w-10 h-10 image-fit zoom-in">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-12.jpg">
-                                                        </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-6.jpg">
-                                                        </div>
-                                                        <div class="w-10 h-10 image-fit zoom-in -ml-5">
-                                                            <img alt="Midone - HTML Admin Template" class="tooltip rounded-full" src="dist/images/preview-14.jpg">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <a href="" class="font-medium whitespace-nowrap">Apple MacBook Pro 13</a> 
-                                                    <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">PC &amp; Laptop</div>
-                                                </td>
-                                                <td class="text-center">164</td>
-                                                <td class="w-40">
-                                                    <div class="flex items-center justify-center text-success"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Active </div>
-                                                </td>
-                                                <td class="table-report__action w-56">
-                                                    <div class="flex justify-center items-center">
-                                                        <a class="flex items-center mr-3" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-1"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Edit </a>
-                                                        <a class="flex items-center text-danger" href=""> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" data-lucide="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Delete </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="intro-y flex flex-wrap sm:flex-row sm:flex-nowrap items-center mt-3">
+                                <!-- <div class="intro-y flex flex-wrap sm:flex-row sm:flex-nowrap items-center mt-3">
                                     <nav class="w-full sm:w-auto sm:mr-auto">
                                         <ul class="pagination">
                                             <li class="page-item">
-                                                <a class="page-link" href="#"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevrons-left" class="lucide lucide-chevrons-left w-4 h-4" data-lucide="chevrons-left"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg> </a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="#"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-left" class="lucide lucide-chevron-left w-4 h-4" data-lucide="chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg> </a>
-                                            </li>
-                                            <li class="page-item"> <a class="page-link" href="#">...</a> </li>
-                                            <li class="page-item"> <a class="page-link" href="#">1</a> </li>
-                                            <li class="page-item active"> <a class="page-link" href="#">2</a> </li>
-                                            <li class="page-item"> <a class="page-link" href="#">3</a> </li>
-                                            <li class="page-item"> <a class="page-link" href="#">...</a> </li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="#"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-right" class="lucide lucide-chevron-right w-4 h-4" data-lucide="chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg> </a>
-                                            </li>
-                                            <li class="page-item">
-                                                <a class="page-link" href="#"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevrons-right" class="lucide lucide-chevrons-right w-4 h-4" data-lucide="chevrons-right"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> </a>
+                                                <a class="page-link" href="{{ route('ledger.index') }}"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevrons-right" class="lucide lucide-chevrons-right w-4 h-4" data-lucide="chevrons-right"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg> View All Clients </a>
                                             </li>
                                         </ul>
                                     </nav>
-                                    <select class="w-20 form-select box mt-3 sm:mt-0">
-                                        <option>10</option>
-                                        <option>25</option>
-                                        <option>35</option>
-                                        <option>50</option>
-                                    </select>
-                                </div>
+                                    <div class="text-slate-500 text-sm">
+                                        Showing {{ $dashboardData['recentClients']->count() }} of {{ $dashboardData['totalClients'] }} clients
+                                    </div>
+                                </div> -->
                             </div>
                             <!-- END: Weekly Top Products -->
                         </div>
@@ -498,7 +435,7 @@
                         <div class="2xl:border-l -mb-10 pb-10">
                             <div class="2xl:pl-6 grid grid-cols-12 gap-x-6 2xl:gap-x-0 gap-y-6">
                                 <!-- BEGIN: Transactions -->
-                                <div class="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-12 mt-3 2xl:mt-8">
+                                <!-- <div class="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-12 mt-3 2xl:mt-8">
                                     <div class="intro-x flex items-center h-10">
                                         <h2 class="text-lg font-medium truncate mr-5">
                                             Transactions
@@ -567,10 +504,10 @@
                                         </div>
                                         <a href="" class="intro-x w-full block text-center rounded-md py-3 border border-dotted border-slate-400 dark:border-darkmode-300 text-slate-500">View More</a> 
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- END: Transactions -->
                                 <!-- BEGIN: Recent Activities -->
-                                <div class="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-12 mt-3">
+                                <!-- <div class="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-12 mt-3">
                                     <div class="intro-x flex items-center h-10">
                                         <h2 class="text-lg font-medium truncate mr-5">
                                             Recent Activities
@@ -649,10 +586,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- END: Recent Activities -->
                                 <!-- BEGIN: Important Notes -->
-                                <div class="col-span-12 md:col-span-6 xl:col-span-12 xl:col-start-1 xl:row-start-1 2xl:col-start-auto 2xl:row-start-auto mt-3">
+                                <!-- <div class="col-span-12 md:col-span-6 xl:col-span-12 xl:col-start-1 xl:row-start-1 2xl:col-start-auto 2xl:row-start-auto mt-3">
                                     <div class="intro-x flex items-center h-10">
                                         <h2 class="text-lg font-medium truncate mr-auto">
                                             Important Notes
@@ -709,10 +646,10 @@
                                                 </div></div></div></div></div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- END: Important Notes -->
                                 <!-- BEGIN: Schedules -->
-                                <div class="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-12 xl:col-start-1 xl:row-start-2 2xl:col-start-auto 2xl:row-start-auto mt-3">
+                                <!-- <div class="col-span-12 md:col-span-6 xl:col-span-4 2xl:col-span-12 xl:col-start-1 xl:row-start-2 2xl:col-start-auto 2xl:row-start-auto mt-3">
                                     <div class="intro-x flex items-center h-10">
                                         <h2 class="text-lg font-medium truncate mr-5">
                                             Schedules
@@ -795,7 +732,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- END: Schedules -->
                             </div>
                         </div>
