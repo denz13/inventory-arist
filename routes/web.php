@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\dashboard\DashboardController;
+use App\Http\Controllers\inventory\InventoryController;
 // use App\Http\Controllers\PageController;
 // use App\Http\Controllers\DarkModeController;
 // use App\Http\Controllers\ColorSchemeController;
@@ -39,5 +40,6 @@ Route::controller(AuthController::class)->middleware('loggedin')->group(function
 Route::middleware('auth')->group(function() {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-   
+    Route::get('inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('inventory', [InventoryController::class, 'store'])->name('inventory.store');
 });

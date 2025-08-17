@@ -45,15 +45,15 @@
                         <a href="javascript:;" class="side-menu" data-menu="menu-layout">
                             <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
                             <div class="side-menu__title">
-                                Menu Layout 
+                                Inventory 
                                 <div class="side-menu__sub-icon"> <i data-lucide="chevron-down"></i> </div>
                             </div>
                         </a>
                         <ul class="">
                             <li>
-                                <a href="{{ route('home') }}" class="side-menu">
+                                <a href="{{ route('inventory.index') }}" class="side-menu">
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
-                                    <div class="side-menu__title"> Side Menu </div>
+                                    <div class="side-menu__title"> Add Inventory </div>
                                 </a>
                             </li>
                             <li>
