@@ -1,225 +1,232 @@
-let itemCounter = 1;
+console.log('Inventory JavaScript file loaded');
+
+// Simple toggle function - works directly
+window.simpleToggle = function(checkbox) {
+    console.log('simpleToggle called with checked:', checkbox.checked);
+    
+    const newSection = document.getElementById('new-item-name-section');
+    const existingSection = document.getElementById('existing-item-name-section');
+    const toggleLabel = document.getElementById('toggle-label');
+    const toggleStatus = document.getElementById('toggle-status');
+    
+    if (checkbox.checked) {
+        // Show input, hide dropdown
+        newSection.style.display = 'block';
+        existingSection.style.display = 'none';
+        toggleLabel.textContent = 'Input New Name';
+        toggleStatus.textContent = 'Currently: Input New Name';
+        
+        // Clear dropdown and set required
+        document.getElementById('existing_item_id').value = '';
+        document.getElementById('item_name').required = true;
+        document.getElementById('existing_item_id').required = false;
+        
+        console.log('Switched to INPUT mode');
+    } else {
+        // Show dropdown, hide input
+        newSection.style.display = 'none';
+        existingSection.style.display = 'block';
+        toggleLabel.textContent = 'Select Existing';
+        toggleStatus.textContent = 'Currently: Select Existing Item';
+        
+        // Clear input and set required
+        document.getElementById('item_name').value = '';
+        document.getElementById('item_name').required = false;
+        document.getElementById('existing_item_id').required = true;
+        
+        console.log('Switched to DROPDOWN mode');
+    }
+};
+
+// Also define it as a regular function for backup
+function simpleToggle(checkbox) {
+    return window.simpleToggle(checkbox);
+}
 
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing...');
-    console.log('Current itemCounter:', itemCounter);
+    console.log('DOM loaded, initializing inventory management...');
     
-    // Test if the modal exists
-    const modalElement = document.getElementById('add-inventory-modal');
-    console.log('Modal found:', modalElement);
-    
-    // Test if the add item button exists
-    const addItemBtn = document.getElementById('add-item-btn');
-    console.log('Add item button found:', addItemBtn);
-    
+    // Initialize form handlers
     initializeInventoryForm();
     
-    // Also listen for modal shown event to reinitialize
-    if (modalElement) {
-        modalElement.addEventListener('shown.bs.modal', function() {
-            console.log('Modal shown, reinitializing...');
-            initializeInventoryForm();
-        });
-        
-        modalElement.addEventListener('hidden.bs.modal', function() {
-            console.log('Modal hidden, resetting form...');
-            resetForm();
-        });
-    }
+    // Initialize search functionality
+    initializeSearch();
     
-    // Use event delegation for dynamic buttons (add/remove items)
-    document.addEventListener('click', function(e) {
-        // Add Item button
-        if (e.target && e.target.id === 'add-item-btn') {
-            console.log('Add item button clicked via event delegation!');
-            e.preventDefault();
-            e.stopPropagation();
-            testAddItem();
-        }
-        
-        // Remove Item button
-        if (e.target && e.target.classList.contains('remove-item-btn')) {
-            console.log('Remove item button clicked via event delegation!');
-            e.preventDefault();
-            e.stopPropagation();
-            removeItemRow(e.target);
-        }
-    });
+    // Initialize modal event listeners
+    initializeModals();
     
-    // Debug: Check if modal elements exist
-    console.log('Checking modal elements...');
-    console.log('Delete modal:', document.getElementById('delete-confirmation-modal'));
-    console.log('Client name span:', document.getElementById('delete-client-name'));
-    console.log('Client address span:', document.getElementById('delete-client-address'));
-    console.log('Confirm delete button:', document.getElementById('confirm-delete-btn'));
+    // Initialize automatic low stock detection
+    initializeLowStockDetection();
+
+    // Initialize toggle handlers (no inline onchange)
+    initializeItemNameToggles();
 });
-
-// Delete inventory functions - moved outside DOMContentLoaded to be globally available
-let currentDeleteId = null;
-
-function prepareDelete(inventoryId, clientName, clientAddress) {
-    console.log('prepareDelete called with:', { inventoryId, clientName, clientAddress });
-    
-    // Store the current delete ID
-    currentDeleteId = inventoryId;
-    
-    // Populate the delete confirmation modal
-    const clientNameElement = document.getElementById('delete-client-name');
-    const clientAddressElement = document.getElementById('delete-client-address');
-    
-    if (clientNameElement && clientAddressElement) {
-        clientNameElement.textContent = clientName || 'N/A';
-        clientAddressElement.textContent = clientAddress || 'N/A';
-        console.log('Modal populated successfully');
-    } else {
-        console.error('Could not find modal elements:', { clientNameElement, clientAddressElement });
-    }
-}
-
-function confirmDelete() {
-    if (!currentDeleteId) {
-        console.error('No delete ID set');
-        showNotification('error', 'Error: No inventory selected for deletion');
-        return;
-    }
-    
-    console.log('Confirming deletion of inventory:', currentDeleteId);
-    
-    // Show loading state
-    const deleteBtn = document.querySelector('#delete-confirmation-modal .btn-danger');
-    const originalText = deleteBtn.textContent;
-    deleteBtn.disabled = true;
-    deleteBtn.textContent = 'Deleting...';
-    
-    // Send delete request
-    fetch(`/inventory/${currentDeleteId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Delete response received:', data);
-        
-        if (data.success) {
-            // Show success message
-            showNotification('success', 'Inventory deleted successfully!');
-            
-            // Close modal
-            const modal = document.getElementById('delete-confirmation-modal');
-            if (modal) {
-                // Use Tailwind modal dismiss
-                const closeBtn = modal.querySelector('[data-tw-dismiss="modal"]');
-                if (closeBtn) {
-                    closeBtn.click();
-                }
-            }
-            
-            // Reload page to show updated data
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-            
-        } else {
-            showNotification('error', data.message || 'Error occurred while deleting inventory');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('error', 'Network error occurred. Please try again.');
-    })
-    .finally(() => {
-        // Re-enable delete button
-        deleteBtn.disabled = false;
-        deleteBtn.textContent = originalText;
-        
-        // Reset current delete ID
-        currentDeleteId = null;
-    });
-}
 
 function initializeInventoryForm() {
     const form = document.getElementById('add-inventory-form');
     if (form) {
         form.addEventListener('submit', handleFormSubmit);
-        console.log('Form initialized');
+        console.log('Add inventory form initialized');
     } else {
-        console.log('Form not found');
+        console.log('Add inventory form not found');
     }
 }
 
-// Define the function right here to ensure it's available
-function testAddItem() {
-    console.log('testAddItem function called!');
-    inlineAddItem();
+function initializeSearch() {
+    // Search functionality is now handled in the blade file
+    console.log('Search functionality handled by blade file');
 }
 
-function inlineAddItem() {
-    console.log('inlineAddItem function called');
+function initializeModals() {
+    // Add modal event listeners
+    const addModal = document.getElementById('add-inventory-modal');
+    const editModal = document.getElementById('edit-inventory-modal');
     
-    const container = document.getElementById('items-container');
-    if (!container) {
-        console.error('Items container not found!');
-        return;
+    if (addModal) {
+        addModal.addEventListener('hidden.bs.modal', function() {
+            resetForm();
+        });
+        
+        // Re-initialize toggles when modal is shown
+        addModal.addEventListener('shown.bs.modal', function() {
+            console.log('Add modal shown, re-initializing toggles');
+            initializeAddModalToggles();
+        });
     }
     
-    // Get current item count
-    const currentRows = container.querySelectorAll('.item-row');
-    const newIndex = currentRows.length;
+    if (editModal) {
+        editModal.addEventListener('hidden.bs.modal', function() {
+            // Reset edit form if needed
+        });
+        
+        // Re-initialize toggles when modal is shown
+        editModal.addEventListener('shown.bs.modal', function() {
+            console.log('Edit modal shown, re-initializing toggles');
+            initializeEditModalToggles();
+        });
+    }
     
-    console.log('Creating new row with index:', newIndex);
+    // For non-Bootstrap modals, use custom event or MutationObserver
+    // Check if modals are shown by observing style changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                const target = mutation.target;
+                if (target.id === 'add-inventory-modal' && target.style.display === 'block') {
+                    console.log('Add modal displayed, re-initializing toggles');
+                    setTimeout(initializeAddModalToggles, 100);
+                } else if (target.id === 'edit-inventory-modal' && target.style.display === 'block') {
+                    console.log('Edit modal displayed, re-initializing toggles');
+                    setTimeout(initializeEditModalToggles, 100);
+                }
+            }
+        });
+    });
     
-    const newRow = document.createElement('div');
-    newRow.className = 'item-row grid grid-cols-12 gap-4 mb-3 p-3 border rounded';
-    newRow.innerHTML = `
-        <div class="col-span-6">
-            <label class="form-label">Description *</label>
-            <input type="text" name="items[${newIndex}][description]" class="form-control" required>
-        </div>
-        <div class="col-span-6">
-            <label class="form-label">Quantity *</label>
-            <input type="number" name="items[${newIndex}][quantity]" class="form-control" min="1" required>
-        </div>
-        <div class="col-span-6">
-            <label class="form-label">Rec Meter</label>
-            <input type="text" name="items[${newIndex}][rec_meter]" class="form-control">
-        </div>
-        <div class="col-span-6">
-            <label class="form-label">Qty</label>
-            <input type="number" name="items[${newIndex}][qty]" class="form-control" min="0">
-        </div>
-        <div class="col-span-12 flex justify-end">
-            <button type="button" class="btn btn-danger btn-sm remove-item-btn" onclick="removeItemRow(this)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Remove
-            </button>
-        </div>
-    `;
-    
-    container.appendChild(newRow);
-    console.log('New row added successfully!');
+    if (addModal) observer.observe(addModal, { attributes: true });
+    if (editModal) observer.observe(editModal, { attributes: true });
+}
+function initializeItemNameToggles() {
+    initializeAddModalToggles();
+    initializeEditModalToggles();
+
+    // Fallback: delegate in case the element is re-rendered by the modal
+    document.body.addEventListener('change', function(e) {
+        if (e.target && e.target.id === 'toggle-item-name-checkbox') {
+            toggleItemNameInput(e);
+        }
+        if (e.target && e.target.id === 'edit-toggle-item-name-checkbox') {
+            toggleEditItemNameInput(e);
+        }
+    });
 }
 
-function removeItemRow(button) {
-    const itemRow = button.closest('.item-row');
-    const container = document.getElementById('items-container');
-    const itemRows = container.querySelectorAll('.item-row');
+function initializeAddModalToggles() {
+    const toggleCheckbox = document.getElementById('toggle-item-name-checkbox');
+    const newSection = document.getElementById('new-item-name-section');
+    const existingSection = document.getElementById('existing-item-name-section');
     
-    // Don't allow removing the last item row
-    if (itemRows.length <= 1) {
-        alert('At least one item is required');
-        return;
-    }
+    console.log('initializeAddModalToggles called');
+    console.log('Elements found:', {
+        toggleCheckbox: !!toggleCheckbox,
+        newSection: !!newSection,
+        existingSection: !!existingSection
+    });
     
-    if (itemRow) {
-        itemRow.remove();
-        console.log('Item row removed');
+    if (toggleCheckbox) {
+        // Remove existing listeners
+        toggleCheckbox.removeEventListener('change', toggleItemNameInput);
+        toggleCheckbox.removeEventListener('click', toggleItemNameInput);
+        
+        // Add fresh listeners
+        toggleCheckbox.addEventListener('change', function(e) {
+            console.log('Toggle changed:', e.target.checked);
+            toggleItemNameInput(e);
+        });
+        
+        console.log('Add modal toggle initialized, current state:', toggleCheckbox.checked);
+        // Set initial state
+        toggleItemNameInput();
+    } else {
+        console.error('Toggle checkbox not found!');
     }
 }
 
-// Form submission handler
+function initializeEditModalToggles() {
+    // Remove existing listeners to prevent duplicates
+    const editToggleCheckbox = document.getElementById('edit-toggle-item-name-checkbox');
+    if (editToggleCheckbox) {
+        // Clone and replace to remove all existing listeners
+        const newToggle = editToggleCheckbox.cloneNode(true);
+        editToggleCheckbox.parentNode.replaceChild(newToggle, editToggleCheckbox);
+        
+        // Add fresh listeners
+        newToggle.addEventListener('change', toggleEditItemNameInput);
+        newToggle.addEventListener('click', toggleEditItemNameInput);
+        
+        console.log('Edit modal toggle initialized');
+        // Set initial state
+        toggleEditItemNameInput();
+    }
+}
+
+
+function initializeLowStockDetection() {
+    // Add event listeners for quantity fields in add form
+    const addQuantityField = document.getElementById('quantity');
+    if (addQuantityField) {
+        addQuantityField.addEventListener('input', function() {
+            checkLowStock(this.value, 'is_low_stocks');
+        });
+    }
+    
+    // Add event listeners for quantity fields in edit form
+    const editQuantityField = document.getElementById('edit_quantity');
+    if (editQuantityField) {
+        editQuantityField.addEventListener('input', function() {
+            checkLowStock(this.value, 'edit_is_low_stocks');
+        });
+    }
+    
+    console.log('Low stock detection initialized');
+}
+
+function checkLowStock(quantity, checkboxId) {
+    const checkbox = document.getElementById(checkboxId);
+    if (checkbox) {
+        const qty = parseInt(quantity) || 0;
+        if (qty <= 5) {
+            checkbox.checked = true;
+            console.log(`Quantity ${qty} is low stock, checkbox automatically checked`);
+        } else {
+            checkbox.checked = false;
+            console.log(`Quantity ${qty} is not low stock, checkbox unchecked`);
+        }
+    }
+}
+
+// Form submission handler for adding new inventory items
 function handleFormSubmit(e) {
     e.preventDefault();
     console.log('Form submission started...');
@@ -259,19 +266,12 @@ function handleFormSubmit(e) {
         console.log('Response received:', data);
         
         if (data.success) {
-            // Show success message with details
-            const successMessage = `Inventory saved successfully! 
-                Client: ${data.data.client_name}
-                Address: ${data.data.address}
-                Status: ${data.data.status}
-                Items: ${data.data.items.length}`;
+            // Show success message
+            showNotification('success', 'Inventory item created successfully!');
             
-            showNotification('success', successMessage);
-            
-            // Close modal - try multiple approaches
+            // Close modal
             const modal = document.getElementById('add-inventory-modal');
             if (modal) {
-                // Try Bootstrap first
                 if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
                     const modalInstance = bootstrap.Modal.getInstance(modal);
                     if (modalInstance) {
@@ -294,13 +294,13 @@ function handleFormSubmit(e) {
             // Reset form
             resetForm();
             
-            // Reload page to show new data
+            // Redirect back to inventory page instead of reloading
             setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+                window.location.href = '/inventory';
+            }, 1000);
             
         } else {
-            showNotification('error', data.message || 'Error occurred while saving inventory');
+            showNotification('error', data.message || 'Error occurred while creating inventory item');
         }
     })
     .catch(error => {
@@ -319,36 +319,36 @@ function handleFormSubmit(e) {
 // Form validation
 function validateForm() {
     const form = document.getElementById('add-inventory-form');
-    const clientName = form.querySelector('#client_name').value.trim();
-    const address = form.querySelector('#address').value.trim();
+    const categoryId = form.querySelector('#category_id').value;
+    const newItemName = form.querySelector('#item_name').value.trim();
+    const existingItemName = form.querySelector('#existing_item_name').value;
+    const quantity = form.querySelector('#quantity').value;
     
-    if (!clientName) {
-        alert('Please enter Client Name');
+    if (!categoryId) {
+        alert('Please select a Category');
         return false;
     }
     
-    if (!address) {
-        alert('Please enter Address');
-        return false;
+    // Check if either new item name or existing item ID is provided
+    const newItemSection = document.getElementById('new-item-name-section');
+    if (newItemSection.style.display !== 'none') {
+        // New item name mode
+        if (!newItemName) {
+            alert('Please enter Item Name');
+            return false;
+        }
+    } else {
+        // Existing item mode
+        const existingItemId = form.querySelector('#existing_item_id').value;
+        if (!existingItemId) {
+            alert('Please select an existing Item');
+            return false;
+        }
     }
     
-    // Status is automatically set to 'active', no validation needed
-    
-    // Validate items
-    const itemRows = document.querySelectorAll('.item-row');
-    for (let i = 0; i < itemRows.length; i++) {
-        const description = itemRows[i].querySelector('input[name*="[description]"]').value.trim();
-        const quantity = itemRows[i].querySelector('input[name*="[quantity]"]').value;
-        
-        if (!description) {
-            alert(`Please enter Description for Item ${i + 1}`);
-            return false;
-        }
-        
-        if (!quantity || quantity < 1) {
-            alert(`Please enter valid Quantity for Item ${i + 1}`);
-            return false;
-        }
+    if (!quantity || quantity < 0) {
+        alert('Please enter valid Quantity');
+        return false;
     }
     
     return true;
@@ -357,36 +357,19 @@ function validateForm() {
 // Reset form
 function resetForm() {
     const form = document.getElementById('add-inventory-form');
-    form.reset();
-    
-    // Reset items container to only one row
-    const container = document.getElementById('items-container');
-    container.innerHTML = `
-        <div class="item-row grid grid-cols-12 gap-4 mb-3 p-3 border rounded">
-            <div class="col-span-6">
-                <label class="form-label">Description *</label>
-                <input type="text" name="items[0][description]" class="form-control" required>
-            </div>
-            <div class="col-span-6">
-                <label class="form-label">Quantity *</label>
-                <input type="number" name="items[0][quantity]" class="form-control" min="1" required>
-            </div>
-            <div class="col-span-6">
-                <label class="form-label">Rec Meter</label>
-                <input type="text" name="items[0][rec_meter]" class="form-control">
-            </div>
-            <div class="col-span-6">
-                <label class="form-label">Qty</label>
-                <input type="number" name="items[0][qty]" class="form-control" min="0">
-            </div>
-            <div class="col-span-12 flex justify-end">
-                <button type="button" class="btn btn-danger btn-sm remove-item-btn" onclick="removeItemRow(this)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Remove
-                </button>
-            </div>
-        </div>
-    `;
+    if (form) {
+        form.reset();
+        console.log('Form reset successfully');
+    }
 }
+
+// Search functionality is now handled in the blade file
+
+// Delete inventory functions are now handled in the blade file
+
+// View inventory functions are now handled in the blade file
+
+// Edit inventory functions are now handled in the blade file
 
 // Show notification
 function showNotification(type, message) {
@@ -410,428 +393,152 @@ function showNotification(type, message) {
     }, 3000);
 }
 
-// Search function for inventory
-function searchInventory(searchTerm) {
-    console.log('Searching for:', searchTerm);
+// Pagination functions are now handled in the blade file
+
+// Toggle functions for Item Name input
+console.log('toggleItemNameInput function defined');
+function toggleItemNameInput(e) {
+    console.log('toggleItemNameInput invoked');
+    const newSection = document.getElementById('new-item-name-section');
+    const existingSection = document.getElementById('existing-item-name-section');
+    const toggleCheckbox = document.getElementById('toggle-item-name-checkbox');
+    const toggleLabel = document.getElementById('toggle-label');
+    const toggleStatus = document.getElementById('toggle-status');
     
-    const tableBody = document.querySelector('tbody');
-    const rows = tableBody.querySelectorAll('tr');
-    
-    if (!searchTerm || searchTerm.trim() === '') {
-        // Show all rows if search is empty
-        rows.forEach(row => {
-            row.style.display = '';
-        });
-        
-        // Hide "No data available" message when search is cleared
-        showNoDataMessage(false);
-        
-        // Count actual data rows (excluding message rows)
-        const dataRows = Array.from(rows).filter(row => 
-            !row.querySelector('td[colspan]') && 
-            !row.classList.contains('no-data-message')
-        );
-        updateSearchResults(dataRows.length);
-        return;
-    }
-    
-    const searchLower = searchTerm.toLowerCase().trim();
-    let visibleCount = 0;
-    
-    rows.forEach(row => {
-        // Skip rows with colspan (like "No inventory items found") and no-data-message
-        if (row.querySelector('td[colspan]') || row.classList.contains('no-data-message')) {
-            row.style.display = 'none';
-            return;
-        }
-        
-        const clientName = row.querySelector('td:first-child a')?.textContent?.toLowerCase() || '';
-        const address = row.querySelector('td:nth-child(2) div')?.textContent?.toLowerCase() || '';
-        const itemsCount = row.querySelector('td:nth-child(3)')?.textContent || '';
-        const status = row.querySelector('td:nth-child(4) div')?.textContent?.toLowerCase() || '';
-        
-        // Check if any field contains the search term
-        const isMatch = clientName.includes(searchLower) || 
-                       address.includes(searchLower) || 
-                       itemsCount.includes(searchLower) || 
-                       status.includes(searchLower);
-        
-        if (isMatch) {
-            row.style.display = '';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
-        }
+    console.log('Elements found in toggle:', {
+        newSection: !!newSection,
+        existingSection: !!existingSection,
+        toggleCheckbox: !!toggleCheckbox,
+        toggleLabel: !!toggleLabel,
+        toggleStatus: !!toggleStatus
     });
     
-    // Show "No data available" message if no results
-    showNoDataMessage(visibleCount === 0);
+    const isChecked = e && e.target ? e.target.checked : !!(toggleCheckbox && toggleCheckbox.checked);
+    console.log('toggleItemNameInput state:', isChecked);
+    console.log('Checkbox actual checked value:', toggleCheckbox ? toggleCheckbox.checked : 'no checkbox');
     
-    updateSearchResults(visibleCount);
-}
-
-// Update search results count
-function updateSearchResults(count) {
-    const allRows = document.querySelectorAll('tbody tr');
-    const dataRows = Array.from(allRows).filter(row => !row.querySelector('td[colspan]') && !row.classList.contains('no-data-message'));
-    const totalCount = dataRows.length;
-    
-    const resultsText = document.querySelector('.hidden.md\\:block.mx-auto.text-slate-500');
-    const clearButton = document.getElementById('clear-search');
-    
-    if (resultsText) {
-        if (count === totalCount) {
-            resultsText.textContent = `Showing ${totalCount} entries`;
-            if (clearButton) clearButton.style.display = 'none';
-        } else {
-            resultsText.textContent = `Showing ${count} of ${totalCount} entries`;
-            if (clearButton) clearButton.style.display = 'block';
+    if (isChecked) {
+        // Switch to Input New Name
+        console.log('Switching to INPUT NEW NAME');
+        if (newSection) {
+            newSection.style.display = 'block';
+            newSection.style.visibility = 'visible';
+            console.log('New section shown');
         }
-    }
-}
-
-// Clear search function
-function clearSearch() {
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.value = '';
-        searchInventory('');
-    }
-}
-
-// Enhanced search with debouncing
-let searchTimeout;
-function debouncedSearch(searchTerm) {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        searchInventory(searchTerm);
-    }, 300); // Wait 300ms after user stops typing
-}
-
-// Show/hide "No data available" message
-function showNoDataMessage(show) {
-    let noDataRow = document.querySelector('tr.no-data-message');
-    
-    if (show) {
-        if (!noDataRow) {
-            noDataRow = document.createElement('tr');
-            noDataRow.className = 'no-data-message';
-            noDataRow.innerHTML = '<td colspan="5" class="text-center py-8 text-slate-500">No data available</td>';
-            document.querySelector('tbody').appendChild(noDataRow);
+        if (existingSection) {
+            existingSection.style.display = 'none';
+            existingSection.style.visibility = 'hidden';
+            console.log('Existing section hidden');
         }
-        noDataRow.style.display = '';
+        if (toggleLabel) toggleLabel.textContent = 'Input New Name';
+        if (toggleStatus) toggleStatus.textContent = 'Currently: Input New Name';
+        
+        // Set required attribute on new input, remove from existing
+        const newInput = document.getElementById('item_name');
+        const existingSelect = document.getElementById('existing_item_name');
+        if (newInput) newInput.required = true;
+        if (existingSelect) existingSelect.required = false;
+        
+        // Clear existing selection
+        if (existingSelect) existingSelect.value = '';
+        
     } else {
-        if (noDataRow) {
-            noDataRow.style.display = 'none';
-            // Also remove the row completely if it exists
-            if (noDataRow.parentNode) {
-                noDataRow.parentNode.removeChild(noDataRow);
-            }
+        // Switch to Select Existing Item
+        console.log('Switching to SELECT EXISTING');
+        if (newSection) {
+            newSection.style.display = 'none';
+            newSection.style.visibility = 'hidden';
+            console.log('New section hidden');
         }
-    }
-}
-
-// Edit inventory functions
-function editInventory(inventoryId) {
-    console.log('Editing inventory:', inventoryId);
-    
-    // Show loading state
-    showNotification('info', 'Loading inventory data...');
-    
-    // Check if modal exists
-    const modal = document.getElementById('edit-inventory-modal');
-    console.log('Edit modal found:', modal);
-    
-    if (!modal) {
-        console.error('Edit modal not found!');
-        showNotification('error', 'Edit modal not found');
-        return;
-    }
-    
-    // Fetch inventory data
-    fetch(`/inventory/${inventoryId}/edit`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]').value
+        if (existingSection) {
+            existingSection.style.display = 'block';
+            existingSection.style.visibility = 'visible';
+            console.log('Existing section shown');
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Edit data received:', data);
-        if (data.success) {
-            populateEditForm(data.data);
-            console.log('Edit form populated successfully');
-            
-            // Bind the form submission handler
-            const editForm = document.getElementById('edit-inventory-form');
-            if (editForm) {
-                editForm.onsubmit = handleEditFormSubmit;
-                console.log('Edit form submission handler bound');
-            }
-        } else {
-            showNotification('error', data.message || 'Error loading inventory data');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('error', 'Network error occurred. Please try again.');
-    });
-}
-
-function populateEditForm(inventory) {
-    console.log('Populating edit form with:', inventory);
-    
-    // Set form action
-    document.getElementById('edit-inventory-form').action = `/inventory/${inventory.id}`;
-    
-    // Set inventory ID
-    document.getElementById('edit_inventory_id').value = inventory.id;
-    
-    // Set basic fields
-    document.getElementById('edit_client_name').value = inventory.client_name;
-    document.getElementById('edit_address').value = inventory.address;
-    document.getElementById('edit_status').value = inventory.status;
-    
-    // Populate items
-    const editItemsContainer = document.getElementById('edit-items-container');
-    editItemsContainer.innerHTML = '';
-    
-    inventory.items.forEach((item, index) => {
-        const itemRow = document.createElement('div');
-        itemRow.className = 'edit-item-row grid grid-cols-12 gap-4 mb-3 p-3 border rounded';
-        itemRow.innerHTML = `
-            <div class="col-span-6">
-                <label class="form-label">Description *</label>
-                <input type="text" name="items[${index}][description]" class="form-control" value="${item.description}" required>
-            </div>
-            <div class="col-span-6">
-                <label class="form-label">Quantity *</label>
-                <input type="number" name="items[${index}][quantity]" class="form-control" min="1" value="${item.quantity}" required>
-            </div>
-            <div class="col-span-6">
-                <label class="form-label">Rec Meter</label>
-                <input type="text" name="items[${index}][rec_meter]" class="form-control" value="${item.rec_meter || ''}">
-            </div>
-            <div class="col-span-6">
-                <label class="form-label">Qty</label>
-                <input type="number" name="items[${index}][qty]" class="form-control" min="0" value="${item.qty || ''}">
-            </div>
-            <div class="col-span-12 flex justify-end">
-                <button type="button" class="btn btn-danger btn-sm remove-edit-item-btn" onclick="removeEditItemRow(this)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Remove
-                </button>
-            </div>
-        `;
-        editItemsContainer.appendChild(itemRow);
-    });
-}
-
-function editAddItem() {
-    console.log('editAddItem function called');
-    
-    const container = document.getElementById('edit-items-container');
-    if (!container) {
-        console.error('Edit items container not found!');
-        return;
-    }
-    
-    // Get current item count
-    const currentRows = container.querySelectorAll('.edit-item-row');
-    const newIndex = currentRows.length;
-    
-    console.log('Creating new edit row with index:', newIndex);
-    
-    const newRow = document.createElement('div');
-    newRow.className = 'edit-item-row grid grid-cols-12 gap-4 mb-3 p-3 border rounded';
-    newRow.innerHTML = `
-        <div class="col-span-6">
-            <label class="form-label">Description *</label>
-            <input type="text" name="items[${newIndex}][description]" class="form-control" required>
-        </div>
-        <div class="col-span-6">
-            <label class="form-label">Quantity *</label>
-            <input type="number" name="items[${newIndex}][quantity]" class="form-control" min="1" required>
-        </div>
-        <div class="col-span-6">
-            <label class="form-label">Rec Meter</label>
-            <input type="text" name="items[${newIndex}][rec_meter]" class="form-control">
-        </div>
-        <div class="col-span-6">
-            <label class="form-label">Qty</label>
-            <input type="number" name="items[${newIndex}][qty]" class="form-control" min="0">
-        </div>
-        <div class="col-span-12 flex justify-end">
-            <button type="button" class="btn btn-danger btn-sm remove-edit-item-btn" onclick="removeEditItemRow(this)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="trash-2" class="lucide lucide-trash-2 w-4 h-4 mr-1"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Remove
-            </button>
-        </div>
-    `;
-    
-    container.appendChild(newRow);
-    console.log('New edit row added successfully!');
-}
-
-function removeEditItemRow(button) {
-    const itemRow = button.closest('.edit-item-row');
-    const container = document.getElementById('edit-items-container');
-    const itemRows = container.querySelectorAll('.edit-item-row');
-    
-    // Don't allow removing the last item row
-    if (itemRows.length <= 1) {
-        alert('At least one item is required');
-        return;
-    }
-    
-    if (itemRow) {
-        itemRow.remove();
-        console.log('Edit item row removed');
-    }
-}
-
-function handleEditFormSubmit(e) {
-    e.preventDefault();
-    console.log('Edit form submission started...');
-    
-    // Get form data
-    const form = document.getElementById('edit-inventory-form');
-    const formData = new FormData(form);
-    
-    // Debug: Log form data
-    console.log('Edit form data being sent:');
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
-    
-    // Validate form
-    if (!validateEditForm()) {
-        return false;
-    }
-    
-    // Show loading state
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Updating...';
-    
-    // Send AJAX request
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || document.querySelector('input[name="_token"]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Edit response received:', data);
+        if (toggleLabel) toggleLabel.textContent = 'Select Existing';
+        if (toggleStatus) toggleStatus.textContent = 'Currently: Select Existing Item';
         
-        if (data.success) {
-            // Show success message
-            showNotification('success', 'Inventory updated successfully!');
-            
-            // Close modal
-            const modal = document.getElementById('edit-inventory-modal');
-            if (modal) {
-                modal.style.display = 'none';
-                modal.classList.remove('show');
-                document.body.classList.remove('modal-open');
-                
-                // Remove backdrop if exists
-                const backdrop = document.querySelector('.modal-backdrop');
-                if (backdrop) {
-                    backdrop.remove();
-                }
-            }
-            
-            // Reload page to show updated data
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-            
-        } else {
-            showNotification('error', data.message || 'Error occurred while updating inventory');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('error', 'Network error occurred. Please try again.');
-    })
-    .finally(() => {
-        // Re-enable submit button
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    });
-    
-    return false;
-}
-
-function validateEditForm() {
-    const form = document.getElementById('edit-inventory-form');
-    const clientName = form.querySelector('#edit_client_name').value.trim();
-    const address = form.querySelector('#edit_address').value.trim();
-    
-    if (!clientName) {
-        alert('Please enter Client Name');
-        return false;
-    }
-    
-    if (!address) {
-        alert('Please enter Address');
-        return false;
-    }
-    
-    // Validate items
-    const itemRows = document.querySelectorAll('.edit-item-row');
-    for (let i = 0; i < itemRows.length; i++) {
-        const description = itemRows[i].querySelector('input[name*="[description]"]').value.trim();
-        const quantity = itemRows[i].querySelector('input[name*="[quantity]"]').value;
+        // Set required attribute on existing select, remove from new input
+        const newInput = document.getElementById('item_name');
+        const existingSelect = document.getElementById('existing_item_name');
+        if (newInput) newInput.required = false;
+        if (existingSelect) existingSelect.required = true;
         
-        if (!description) {
-            alert(`Please enter Description for Item ${i + 1}`);
-            return false;
-        }
+        // Clear new input
+        if (newInput) newInput.value = '';
+    }
+}
+
+console.log('toggleEditItemNameInput function defined');
+function toggleEditItemNameInput(e) {
+    console.log('toggleEditItemNameInput invoked');
+    const newSection = document.getElementById('edit-new-item-name-section');
+    const existingSection = document.getElementById('edit-existing-item-name-section');
+    const toggleCheckbox = document.getElementById('edit-toggle-item-name-checkbox');
+    const toggleLabel = document.getElementById('edit-toggle-label');
+    const toggleStatus = document.getElementById('edit-toggle-status');
+    const isChecked = e && e.target ? e.target.checked : !!(toggleCheckbox && toggleCheckbox.checked);
+    console.log('toggleEditItemNameInput state:', isChecked);
+    
+    if (isChecked) {
+        // Switch to Input New Name
+        if (newSection) { newSection.classList.remove('hidden'); newSection.style.display = 'block'; }
+        if (existingSection) { existingSection.classList.add('hidden'); existingSection.style.display = 'none'; }
+        toggleLabel.textContent = 'Input New Name';
+        toggleStatus.textContent = 'Currently: Input New Name';
         
-        if (!quantity || quantity < 1) {
-            alert(`Please enter valid Quantity for Item ${i + 1}`);
-            return false;
-        }
+        // Set required attribute on new input, remove from existing
+        const newInput = document.getElementById('edit_item_name');
+        const existingSelect = document.getElementById('edit_existing_item_name');
+        if (newInput) newInput.required = true;
+        if (existingSelect) existingSelect.required = false;
+        
+        // Clear existing selection
+        if (existingSelect) existingSelect.value = '';
+        
+    } else {
+        // Switch to Select Existing Item
+        if (newSection) { newSection.classList.add('hidden'); newSection.style.display = 'none'; }
+        if (existingSection) { existingSection.classList.remove('hidden'); existingSection.style.display = 'block'; }
+        toggleLabel.textContent = 'Select Existing';
+        toggleStatus.textContent = 'Currently: Select Existing Item';
+        
+        // Set required attribute on existing select, remove from new input
+        const newInput = document.getElementById('edit_item_name');
+        const existingSelect = document.getElementById('edit_existing_item_name');
+        if (newInput) newInput.required = false;
+        if (existingSelect) existingSelect.required = true;
+        
+        // Clear new input
+        if (newInput) newInput.value = '';
+    }
+}
+
+// Make functions globally accessible
+window.toggleItemNameInput = toggleItemNameInput;
+window.toggleEditItemNameInput = toggleEditItemNameInput;
+
+// Verify functions are accessible
+console.log('Global functions assigned:', {
+    toggleItemNameInput: typeof window.toggleItemNameInput,
+    toggleEditItemNameInput: typeof window.toggleEditItemNameInput
+});
+
+// Add error handling for missing elements
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if toggle elements exist
+    const toggleCheckbox = document.getElementById('toggle-item-name-checkbox');
+    const editToggleCheckbox = document.getElementById('edit-toggle-item-name-checkbox');
+    
+    if (toggleCheckbox) {
+        console.log('Add form toggle checkbox found');
+    } else {
+        console.error('Add form toggle checkbox not found');
     }
     
-    return true;
-}
-
-// Placeholder functions for future implementation
-function viewInventory(id) {
-    // TODO: Implement view inventory functionality
-    console.log('View inventory:', id);
-}
-
-function deleteInventory(id) {
-    // TODO: Implement delete inventory functionality
-    console.log('Delete inventory:', id);
-}
-
-// Test function to manually test delete functionality
-function testDeleteFunctionality() {
-    console.log('Testing delete functionality...');
-    
-    // Test prepareDelete
-    prepareDelete(999, 'Test Client', 'Test Address');
-    
-    // Check if modal elements are populated
-    const clientNameElement = document.getElementById('delete-client-name');
-    const clientAddressElement = document.getElementById('delete-client-address');
-    
-    console.log('Client name element:', clientNameElement);
-    console.log('Client address element:', clientAddressElement);
-    
-    if (clientNameElement && clientAddressElement) {
-        console.log('Client name text:', clientNameElement.textContent);
-        console.log('Client address text:', clientAddressElement.textContent);
+    if (editToggleCheckbox) {
+        console.log('Edit form toggle checkbox found');
+    } else {
+        console.error('Edit form toggle checkbox not found');
     }
-    
-    // Test currentDeleteId
-    console.log('Current delete ID:', currentDeleteId);
-}
+});
