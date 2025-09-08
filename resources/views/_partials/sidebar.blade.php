@@ -75,6 +75,35 @@
                             </li>
                         </ul>
                     </li>
+                    <li>
+                        <a href="{{ route('categories.categories') }}" class="side-menu">
+                            <div class="side-menu__icon"> <i data-lucide="box"></i> </div>
+                            <div class="side-menu__title"> Categories </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" class="side-menu" data-menu="crud">
+                            <div class="side-menu__icon"> <i data-lucide="edit"></i> </div>
+                            <div class="side-menu__title">
+                                Generate Reports 
+                                <div class="side-menu__sub-icon"> <i data-lucide="chevron-down"></i> </div>
+                            </div>
+                        </a>
+                        <ul class="">
+                            <li>
+                                <a href="{{ route('reports.order') }}" class="side-menu">
+                                    <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
+                                    <div class="side-menu__title"> Order Reports </div>
+                                </a>
+                            </li>
+                            <!-- <li>
+                                <a href="#" class="side-menu">
+                                    <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
+                                    <div class="side-menu__title"> Form </div>
+                                </a>
+                            </li> -->
+                        </ul>
+                    </li>
                     
                     <!-- <li>
                         <a href="#" class="side-menu">

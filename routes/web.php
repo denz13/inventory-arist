@@ -68,4 +68,16 @@ Route::middleware('auth')->group(function() {
     Route::get('customer/order/{id}/edit', [App\Http\Controllers\customer\CustomerController::class, 'editOrder'])->name('customer.order.edit');
     Route::put('customer/order/{id}', [App\Http\Controllers\customer\CustomerController::class, 'updateOrder'])->name('customer.order.update');
     Route::delete('customer/order/{id}', [App\Http\Controllers\customer\CustomerController::class, 'destroyOrder'])->name('customer.order.destroy');
+
+    // Categories routes
+    Route::get('categories', [App\Http\Controllers\categories\CategoriesController::class, 'index'])->name('categories.categories');
+    Route::post('categories', [App\Http\Controllers\categories\CategoriesController::class, 'store'])->name('categories.store');
+    Route::get('categories/{id}/edit', [App\Http\Controllers\categories\CategoriesController::class, 'edit'])->name('categories.edit');
+    Route::put('categories/{id}', [App\Http\Controllers\categories\CategoriesController::class, 'update'])->name('categories.update');
+    Route::delete('categories/{id}', [App\Http\Controllers\categories\CategoriesController::class, 'destroy'])->name('categories.destroy');
+
+    // Reports routes
+    Route::get('reports/order', [App\Http\Controllers\reports\ReportController::class, 'orderReports'])->name('reports.order');
+    Route::get('reports/order/{id}/print', [App\Http\Controllers\reports\ReportController::class, 'printOrder'])->name('reports.order.print');
+    Route::get('reports', [App\Http\Controllers\reports\ReportController::class, 'index'])->name('reports.index');
 });
