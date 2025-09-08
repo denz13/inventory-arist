@@ -118,10 +118,10 @@
                         <div class="p-4">
                             <div class="flex justify-between items-center mb-3">
                                 <h4 class="font-medium">Orders for {{ $customer->customer_name }}</h4>
-                                <button class="btn btn-outline-primary btn-sm" onclick="orderFromInventoryBrowse({{ $customer->id }}, '{{ $customer->customer_name }}'); showAddOrderModal({{ $customer->id }}, '{{ $customer->customer_name }}')">
+                                <!-- <button class="btn btn-outline-primary btn-sm" onclick="orderFromInventoryBrowse({{ $customer->id }}, '{{ $customer->customer_name }}'); showAddOrderModal({{ $customer->id }}, '{{ $customer->customer_name }}')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart mr-1"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="m1 1 4 4 14 8 2 2H8"></path></svg>
                                     Browse & Order
-                                </button>
+                                </button> -->
                             </div>
                             
                             @if($customer->customer_order->count() > 0)

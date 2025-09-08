@@ -20,11 +20,11 @@
                                                 <div class="flex">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="shopping-cart" data-lucide="shopping-cart" class="lucide lucide-shopping-cart report-box__icon text-primary"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalItems'] > 0 ? round(($dashboardData['totalItems'] / max($dashboardData['totalItems'], 1)) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['monthlyGrowth'] >= 0 ? '+' : '' }}{{ $dashboardData['monthlyGrowth'] }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="{{ $dashboardData['monthlyGrowth'] >= 0 ? 'chevron-up' : 'chevron-down' }}" data-lucide="{{ $dashboardData['monthlyGrowth'] >= 0 ? 'chevron-up' : 'chevron-down' }}" class="lucide lucide-{{ $dashboardData['monthlyGrowth'] >= 0 ? 'chevron-up' : 'chevron-down' }} w-4 h-4 ml-0.5"><polyline points="{{ $dashboardData['monthlyGrowth'] >= 0 ? '18 15 12 9 6 15' : '6 9 12 15 18 9' }}"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalItems']) }}</div>
-                                                <div class="text-base text-slate-500 mt-1">Total Items</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalOrders']) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Total Orders</div>
                                             </div>
                                         </div>
                                     </div>
@@ -32,13 +32,13 @@
                                         <div class="report-box zoom-in">
                                             <div class="box p-5">
                                                 <div class="flex">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="credit-card" data-lucide="credit-card" class="lucide lucide-credit-card report-box__icon text-pending"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="users" data-lucide="users" class="lucide lucide-users report-box__icon text-pending"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalClients'] > 0 ? round(($dashboardData['activeClients'] / $dashboardData['totalClients']) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalCustomers'] > 0 ? round(($dashboardData['activeCustomers'] / $dashboardData['totalCustomers']) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalClients']) }}</div>
-                                                <div class="text-base text-slate-500 mt-1">Total Clients</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalCustomers']) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Total Customers</div>
                                             </div>
                                         </div>
                                     </div>
@@ -46,13 +46,13 @@
                                         <div class="report-box zoom-in">
                                             <div class="box p-5">
                                                 <div class="flex">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="monitor" data-lucide="monitor" class="lucide lucide-monitor report-box__icon text-warning"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg> 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="user-check" data-lucide="user-check" class="lucide lucide-user-check report-box__icon text-warning"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><path d="M10 19l2 2 4-4"></path></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalClients'] > 0 ? round(($dashboardData['activeClients'] / $dashboardData['totalClients']) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalCustomers'] > 0 ? round(($dashboardData['activeCustomers'] / $dashboardData['totalCustomers']) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['activeClients']) }}</div>
-                                                <div class="text-base text-slate-500 mt-1">Active Clients</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['activeCustomers']) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Active Customers</div>
                                             </div>
                                         </div>
                                     </div>
@@ -60,28 +60,28 @@
                                         <div class="report-box zoom-in">
                                             <div class="box p-5">
                                                 <div class="flex">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="user" data-lucide="user" class="lucide lucide-user report-box__icon text-success"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> 
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="dollar-sign" data-lucide="dollar-sign" class="lucide lucide-dollar-sign report-box__icon text-success"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg> 
                                                     <div class="ml-auto">
-                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['totalInventoryValue'] > 0 ? round(($dashboardData['totalInventoryValue'] / max($dashboardData['totalInventoryValue'], 1)) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
+                                                        <div class="report-box__indicator bg-success tooltip cursor-pointer"> {{ $dashboardData['currentMonth'] > 0 ? round(($dashboardData['currentMonth'] / max($dashboardData['currentMonth'], 1)) * 100) : 0 }}% <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="chevron-up" data-lucide="chevron-up" class="lucide lucide-chevron-up w-4 h-4 ml-0.5"><polyline points="18 15 12 9 6 15"></polyline></svg> </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-3xl font-medium leading-8 mt-6">{{ number_format($dashboardData['totalInventoryValue']) }}</div>
-                                                <div class="text-base text-slate-500 mt-1">Total Inventory Value</div>
+                                                <div class="text-3xl font-medium leading-8 mt-6">₱{{ number_format($dashboardData['totalRevenue'], 2) }}</div>
+                                                <div class="text-base text-slate-500 mt-1">Total Revenue</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                @if($dashboardData['totalClients'] == 0)
+                                @if($dashboardData['totalCustomers'] == 0)
                                 <div class="col-span-12 mt-8">
                                     <div class="intro-y box p-8 text-center">
                                         <div class="flex flex-col items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users w-16 h-16 text-slate-400 mb-4"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>
-                                            <h3 class="text-xl font-medium text-slate-600 mb-2">No Clients Found</h3>
-                                            <p class="text-slate-500 mb-4">Get started by adding your first client to the inventory system.</p>
-                                            <a href="{{ route('inventory.index') }}" class="btn btn-primary">
+                                            <h3 class="text-xl font-medium text-slate-600 mb-2">No Customers Found</h3>
+                                            <p class="text-slate-500 mb-4">Get started by adding your first customer to begin tracking orders and sales.</p>
+                                            <a href="{{ route('customer.index') }}" class="btn btn-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-4 h-4 mr-2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                                Add First Client
+                                                Add First Customer
                                             </a>
                                         </div>
                                     </div>
@@ -339,7 +339,7 @@
                             <div class="col-span-12 mt-6">
                                 <div class="intro-y block sm:flex items-center h-10">
                                     <h2 class="text-lg font-medium truncate mr-5">
-                                        Recent Clients
+                                        Top Customers & Recent Activity
                                     </h2>
                                     <div class="flex items-center sm:ml-auto mt-3 sm:mt-0">
                                         <button class="btn box flex items-center text-slate-600 dark:text-slate-300"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="file-text" data-lucide="file-text" class="lucide lucide-file-text hidden sm:block w-4 h-4 mr-2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg> Export to Excel </button>
@@ -350,52 +350,60 @@
                                     <table class="table table-report sm:mt-2">
                                         <thead>
                                             <tr>
-                                                <th class="whitespace-nowrap">CLIENT NAME</th>
+                                                <th class="whitespace-nowrap">CUSTOMER NAME</th>
                                                 <th class="whitespace-nowrap">ADDRESS</th>
                                                 <th class="text-center whitespace-nowrap">STATUS</th>
-                                                <th class="text-center whitespace-nowrap">ITEMS COUNT</th>
+                                                <th class="text-center whitespace-nowrap">ORDERS</th>
+                                                <th class="text-center whitespace-nowrap">TOTAL SPENT</th>
+                                                <th class="text-center whitespace-nowrap">LAST ORDER</th>
                                                 <th class="text-center whitespace-nowrap">ACTIONS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse($dashboardData['recentClients'] as $client)
+                                            @forelse($dashboardData['recentCustomers'] as $customer)
                                             <tr class="intro-x">
                                                 <td>
                                                     <div class="flex items-center">
                                                         <div class="w-10 h-10 flex-none image-fit rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
-                                                            <span class="text-primary font-medium text-lg">{{ strtoupper(substr($client->client_name, 0, 1)) }}</span>
+                                                            <span class="text-primary font-medium text-lg">{{ strtoupper(substr($customer->customer_name, 0, 1)) }}</span>
                                                         </div>
                                                         <div class="ml-4">
-                                                            <div class="font-medium whitespace-nowrap">{{ $client->client_name }}</div>
-                                                            <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">Client ID: {{ $client->id }}</div>
+                                                            <div class="font-medium whitespace-nowrap">{{ $customer->customer_name }}</div>
+                                                            <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">Customer ID: {{ $customer->id }}</div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div class="text-slate-500 text-sm">{{ Str::limit($client->address, 50) }}</div>
+                                                    <div class="text-slate-500 text-sm">{{ Str::limit($customer->address, 50) }}</div>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="flex items-center justify-center">
-                                                        @if($client->status == 'active')
+                                                        @if($customer->status == 'active')
                                                             <div class="flex items-center text-success">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Active
                                                             </div>
                                                         @else
                                                             <div class="flex items-center text-danger">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="x-square" data-lucide="x-square" class="lucide lucide-x-square w-4 h-4 mr-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg> {{ ucfirst($client->status) }}
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="x-square" data-lucide="x-square" class="lucide lucide-x-square w-4 h-4 mr-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg> {{ ucfirst($customer->status) }}
                                                             </div>
                                                         @endif
                                                     </div>
                                                 </td>
                                                 <td class="text-center">
-                                                    <span class="font-medium">{{ $client->items->count() }}</span>
+                                                    <span class="font-medium">{{ $customer->orders_count }}</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="font-medium text-success">₱{{ number_format($customer->total_spent, 2) }}</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="text-slate-500 text-sm">{{ $customer->last_order_date ? \Carbon\Carbon::parse($customer->last_order_date)->format('M d, Y') : 'No orders' }}</span>
                                                 </td>
                                                 <td class="table-report__action w-56">
                                                     <div class="flex justify-center items-center">
-                                                        <a class="flex items-center mr-3" href="{{ route('inventory.edit', $client->id) }}"> 
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-square" data-lucide="check-square" class="lucide lucide-check-square w-4 h-4 mr-1"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg> Edit 
+                                                        <a class="flex items-center mr-3" href="{{ route('customer.index') }}"> 
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="edit" data-lucide="edit" class="lucide lucide-edit w-4 h-4 mr-1"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Edit 
                                                         </a>
-                                                        <a class="flex items-center text-danger" href="{{ route('ledger.show', $client->id) }}" onclick="showClientDetails({{ $client->id }})"> 
+                                                        <a class="flex items-center text-primary" href="{{ route('customer.index') }}"> 
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="eye" data-lucide="eye" class="lucide lucide-eye w-4 h-4 mr-1"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View 
                                                         </a>
                                                     </div>
@@ -403,11 +411,11 @@
                                             </tr>
                                             @empty
                                             <tr>
-                                                <td colspan="5" class="text-center py-8 text-slate-500">
+                                                <td colspan="7" class="text-center py-8 text-slate-500">
                                                     <div class="flex flex-col items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-inbox w-12 h-12 text-slate-400 mb-3"><polyline points="22,12 18,12 14,15 10,15 6,12 2,12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"></path></svg>
-                                                        <span class="text-lg font-medium">No clients found</span>
-                                                        <span class="text-sm">Start by adding your first client in the inventory section</span>
+                                                        <span class="text-lg font-medium">No customers found</span>
+                                                        <span class="text-sm">Start by adding your first customer to begin tracking orders and sales</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -424,11 +432,143 @@
                                         </ul>
                                     </nav>
                                     <div class="text-slate-500 text-sm">
-                                        Showing {{ $dashboardData['recentClients']->count() }} of {{ $dashboardData['totalClients'] }} clients
+                                        Showing {{ $dashboardData['recentCustomers']->count() }} of {{ $dashboardData['totalCustomers'] }} customers
                                     </div>
                                 </div> -->
                             </div>
                             <!-- END: Weekly Top Products -->
+                            
+                            <!-- BEGIN: Sales Analytics by Time Periods -->
+                            <div class="col-span-12 mt-8">
+                                <div class="intro-y flex items-center h-10">
+                                    <h2 class="text-lg font-medium truncate mr-5">
+                                        Sales Analytics & Top Customers
+                                    </h2>
+                                </div>
+                                <div class="grid grid-cols-12 gap-6 mt-5">
+                                    <!-- Sales by Year -->
+                                    <div class="col-span-12 sm:col-span-6 lg:col-span-3 intro-y">
+                                        <div class="box p-5">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h3 class="font-medium">Sales by Year</h3>
+                                                <div class="ml-4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar text-slate-400 hover:text-primary transition-colors"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-4">
+                                                @forelse($dashboardData['salesByYear'] as $yearSale)
+                                                <div class="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg">
+                                                    <div>
+                                                        <div class="font-medium mb-1">{{ $yearSale->year }}</div>
+                                                        <div class="text-xs text-slate-500">{{ $yearSale->orders }} orders</div>
+                                                    </div>
+                                                    <div class="text-right ml-6">
+                                                        <div class="font-medium text-success">₱{{ number_format($yearSale->revenue, 2) }}</div>
+                                                    </div>
+                                                </div>
+                                                @empty
+                                                <div class="text-center text-slate-500 py-4">
+                                                    <div class="text-sm">No yearly sales data</div>
+                                                </div>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Sales by Month -->
+                                    <div class="col-span-12 sm:col-span-6 lg:col-span-3 intro-y">
+                                        <div class="box p-5">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h3 class="font-medium">Sales by Month</h3>
+                                                <div class="ml-4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up text-slate-400 hover:text-success transition-colors"><polyline points="22,6 12,16 2,12"></polyline><path d="M16,6 L22,6 L22,12"></path></svg>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-4 max-h-48 overflow-y-auto">
+                                                @forelse($dashboardData['salesByMonth'] as $monthSale)
+                                                <div class="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg">
+                                                    <div>
+                                                        <div class="font-medium mb-1">{{ DateTime::createFromFormat('!m', $monthSale->month)->format('M') }} {{ $monthSale->year }}</div>
+                                                        <div class="text-xs text-slate-500">{{ $monthSale->orders }} orders</div>
+                                                    </div>
+                                                    <div class="text-right ml-6">
+                                                        <div class="font-medium text-primary">₱{{ number_format($monthSale->revenue, 2) }}</div>
+                                                    </div>
+                                                </div>
+                                                @empty
+                                                <div class="text-center text-slate-500 py-4">
+                                                    <div class="text-sm">No monthly sales data</div>
+                                                </div>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Sales by Week -->
+                                    <div class="col-span-12 sm:col-span-6 lg:col-span-3 intro-y">
+                                        <div class="box p-5">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h3 class="font-medium">Sales by Week</h3>
+                                                <div class="ml-4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock text-slate-400 hover:text-warning transition-colors"><circle cx="12" cy="12" r="10"></circle><polyline points="12,6 12,12 16,14"></polyline></svg>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-4">
+                                                @forelse($dashboardData['salesByWeek'] as $weekSale)
+                                                <div class="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg">
+                                                    <div>
+                                                        <div class="font-medium mb-1">Week {{ $weekSale->week }}, {{ $weekSale->year }}</div>
+                                                        <div class="text-xs text-slate-500">{{ $weekSale->orders }} orders</div>
+                                                    </div>
+                                                    <div class="text-right ml-6">
+                                                        <div class="font-medium text-warning">₱{{ number_format($weekSale->revenue, 2) }}</div>
+                                                    </div>
+                                                </div>
+                                                @empty
+                                                <div class="text-center text-slate-500 py-4">
+                                                    <div class="text-sm">No weekly sales data</div>
+                                                </div>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Top Customers -->
+                                    <div class="col-span-12 sm:col-span-6 lg:col-span-3 intro-y">
+                                        <div class="box p-5">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <h3 class="font-medium">Top Customers</h3>
+                                                <div class="ml-4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown text-slate-400 hover:text-yellow-500 transition-colors"><path d="M2 4L6 2v6L2 10Z"></path><path d="M18 2l4 2v6l-4 2Z"></path><path d="M12 2v6"></path><path d="M12 8v6"></path><path d="M6 8L12 14l6-6"></path></svg>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-4">
+                                                @forelse($dashboardData['topCustomers'] as $topCustomer)
+                                                <div class="flex items-center justify-between py-3 px-3 bg-slate-50 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="w-10 h-10 flex-none bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                                                            <span class="text-primary font-medium">{{ strtoupper(substr($topCustomer->customer_name, 0, 1)) }}</span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="font-medium text-sm mb-1">{{ Str::limit($topCustomer->customer_name, 15) }}</div>
+                                                            <div class="text-xs text-slate-500">{{ $topCustomer->customer_order_count }} orders</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-right ml-6">
+                                                        <div class="font-medium text-success text-sm">₱{{ number_format($topCustomer->total_spent, 2) }}</div>
+                                                    </div>
+                                                </div>
+                                                @empty
+                                                <div class="text-center text-slate-500 py-4">
+                                                    <div class="text-sm">No top customers data</div>
+                                                </div>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END: Sales Analytics by Time Periods -->
                         </div>
                     </div>
                     <div class="col-span-12 2xl:col-span-3">
