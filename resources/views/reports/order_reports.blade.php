@@ -203,45 +203,70 @@
                             <td colspan="9" class="bg-slate-50 p-0">
                                 <div class="p-4">
                                     <h4 class="font-medium text-slate-700 mb-3">Order Details for {{ $groupedOrder['customer']->customer_name }}</h4>
-                                    <div class="overflow-x-auto">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>Order ID</th>
-                                                    <th>Item</th>
-                                                    <th>Category</th>
-                                                    <th>Quantity</th>
-                                                    <th>Price</th>
-                                                    <th>Status</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($groupedOrder['orders'] as $order)
-                                                <tr>
-                                                    <td class="font-medium text-primary">#{{ $order->id }}</td>
-                                                    <td>{{ $order->inventory_quantity->inventory->item_name ?? 'N/A' }}</td>
-                                                    <td>{{ $order->inventory_quantity->inventory->category->category_name ?? 'N/A' }}</td>
-                                                    <td class="text-center">{{ $order->quantity_order ?? 0 }}</td>
-                                                    <td class="text-center text-green-600">₱{{ number_format($order->total_amount_price ?? 0, 2) }}</td>
-                                                    <td class="text-center">
-                                                        <span class="px-2 py-1 rounded-full text-xs font-medium
-                                                            {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : 
-                                                               ($order->status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 
-                                                               ($order->status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800')) }}">
-                                                            {{ ucfirst($order->status) }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <button class="btn btn-outline-primary btn-sm" onclick="printOrder({{ $order->id }})" title="Print Order">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                    
+                                    @php
+                                        // Group orders by delivery date
+                                        $ordersByDeliveryDate = $groupedOrder['orders']->groupBy(function($order) {
+                                            return $order->delivery_date ? \Carbon\Carbon::parse($order->delivery_date)->format('Y-m-d') : 'no-date';
+                                        });
+                                    @endphp
+                                    
+                                    @foreach($ordersByDeliveryDate as $deliveryDate => $ordersForDate)
+                                    <div class="mb-6">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h5 class="font-medium text-slate-600">
+                                                Delivery Date: {{ $deliveryDate === 'no-date' ? 'No Date Set' : \Carbon\Carbon::parse($deliveryDate)->format('M d, Y') }}
+                                            </h5>
+                                            <button class="btn btn-outline-primary btn-sm print-orders-by-date" 
+                                                    data-order-ids="{{ $ordersForDate->pluck('id')->toJson() }}" 
+                                                    data-delivery-date="{{ $deliveryDate }}" 
+                                                    title="Print All Orders for This Date">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer mr-1"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                                Print All ({{ $ordersForDate->count() }})
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="overflow-x-auto">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Order ID</th>
+                                                        <th>Item</th>
+                                                        <th>Category</th>
+                                                        <th>Quantity</th>
+                                                        <th>Price</th>
+                                                        <th>Status</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($ordersForDate as $order)
+                                                    <tr>
+                                                        <td class="font-medium text-primary">#{{ $order->id }}</td>
+                                                        <td>{{ $order->inventory_quantity->inventory->item_name ?? 'N/A' }}</td>
+                                                        <td>{{ $order->inventory_quantity->inventory->category->category_name ?? 'N/A' }}</td>
+                                                        <td class="text-center">{{ $order->quantity_order ?? 0 }}</td>
+                                                        <td class="text-center text-green-600">₱{{ number_format($order->total_amount_price ?? 0, 2) }}</td>
+                                                        <td class="text-center">
+                                                            <span class="px-2 py-1 rounded-full text-xs font-medium
+                                                                {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : 
+                                                                   ($order->status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 
+                                                                   ($order->status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800')) }}">
+                                                                {{ ucfirst($order->status) }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-outline-primary btn-sm" onclick="printOrder({{ $order->id }})" title="Print Single Order">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
+                                    @endforeach
                                 </div>
                             </td>
                         </tr>
@@ -257,5 +282,5 @@
     </div>
 </div>
 
-<script src="{{ asset('js/reports/order_reports.js') }}"></script>
+<script src="{{ asset('js/reports/order_reports.js') }}?v={{ time() }}"></script>
 @endsection

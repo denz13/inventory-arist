@@ -8,190 +8,271 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 10px;
+            color: #000;
+            background: white;
+            font-size: 11px;
         }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        .company-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .document-title {
-            font-size: 18px;
-            color: #666;
-        }
-        .order-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-        .info-section {
-            flex: 1;
-            margin-right: 20px;
-        }
-        .info-section:last-child {
-            margin-right: 0;
-        }
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-        }
-        .info-row {
-            margin-bottom: 8px;
-            display: flex;
-        }
-        .info-label {
-            font-weight: bold;
-            width: 120px;
-            color: #555;
-        }
-        .info-value {
-            flex: 1;
-        }
-        .order-details {
-            margin-top: 30px;
-        }
-        .details-table {
+        .client-info-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-bottom: 0px;
+            font-size: 11px;
         }
-        .details-table th,
-        .details-table td {
-            border: 1px solid #ddd;
-            padding: 12px;
+        .client-info-table td {
+            border: 1px solid #000;
+            padding: 4px 8px;
             text-align: left;
         }
-        .details-table th {
-            background-color: #f5f5f5;
-            font-weight: bold;
+        .main-content {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
         }
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
+        .left-section, .right-section {
+            flex: 1;
         }
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-confirmed { background-color: #d1ecf1; color: #0c5460; }
-        .status-delivered { background-color: #d4edda; color: #155724; }
-        .status-cancelled { background-color: #f8d7da; color: #721c24; }
-        .footer {
-            margin-top: 40px;
+        .section-header {
+            font-weight: bold;
+            font-size: 11px;
+            margin-bottom: 3px;
             text-align: center;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
+            background-color: #f0f0f0;
+            padding: 3px;
+            border: 1px solid #000;
         }
-        .total-section {
-            margin-top: 20px;
+        .materials-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+        .materials-table th,
+        .materials-table td {
+            border: 1px solid #000;
+            padding: 2px 4px;
+            text-align: left;
+        }
+        .materials-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 10px;
+        }
+        .materials-table .qty-col {
+            width: 40px;
+            text-align: center;
+        }
+        .materials-table .price-col {
+            width: 60px;
             text-align: right;
         }
-        .total-amount {
-            font-size: 18px;
+        .materials-table .unit-price-col {
+            width: 60px;
+            text-align: right;
+        }
+        .summary-section {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .summary-left, .summary-right {
+            flex: 1;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+        .summary-table td {
+            border: 1px solid #000;
+            padding: 2px 4px;
+        }
+        .summary-table .label-col {
             font-weight: bold;
-            color: #28a745;
+            background-color: #f0f0f0;
+        }
+        .summary-table .value-col {
+            text-align: right;
+            font-weight: bold;
+        }
+        .total-row {
+            background-color: #ffff00 !important;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            font-size: 10px;
+        }
+        .footer-left {
+            text-align: left;
+        }
+        .footer-center {
+            text-align: center;
+        }
+        .footer-right {
+            text-align: right;
+        }
+        .calculation {
+            font-weight: bold;
+            margin-top: 3px;
+        }
+        .grand-total {
+            font-weight: bold;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="company-name">{{ $company_name }}</div>
-        <div class="document-title">ORDER RECEIPT</div>
-    </div>
+    <table class="client-info-table">
+        <tr>
+            <td colspan="2" style="text-align: center; font-size: 14px; font-weight: bold; border: 1px solid #000; padding: 8px;">
+                Solar Installation Materials
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Client Name: {{ $order->customer->customer_name ?? 'N/A' }}</strong></td>
+            <td><strong>Address: {{ $order->customer->address ?? 'N/A' }}</strong></td>
+        </tr>
+        <tr>
+            <td><strong>DATE: {{ $order->created_at->format('M j,Y') }}</strong></td>
+            <td><strong>Package: {{ $order->inventory_quantity->inventory->item_name ?? 'N/A' }}</strong></td>
+        </tr>
+    </table>
 
-    <div class="order-info">
-        <div class="info-section">
-            <div class="section-title">Order Information</div>
-            <div class="info-row">
-                <div class="info-label">Order ID:</div>
-                <div class="info-value">#{{ $order->id }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Order Date:</div>
-                <div class="info-value">{{ $order->created_at->format('M d, Y H:i') }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Status:</div>
-                <div class="info-value">
-                    <span class="status-badge status-{{ $order->status }}">
-                        {{ ucfirst($order->status) }}
-                    </span>
-                </div>
-            </div>
+    <!-- Main Table with Side by Side Layout -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin: 0;">
+        <!-- Headers -->
+        <tr style="background-color: #f0f0f0;">
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 25%;">Description</th>
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 6%;">QTY</th>
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 10%;">Unit Price</th>
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 9%;">Price</th>
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 25%;">Service Entrace for Rec Meter</th>
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 6%;">QTY</th>
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 10%;">Unit Price</th>
+            <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; width: 9%;">Price</th>
+        </tr>
+        
+        <!-- Row 1 -->
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px;">Bushing 1-3/4 3/4-1/2</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">25</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+        </tr>
+        
+        <!-- Row 2 -->
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px;">{{ $order->inventory_quantity->inventory->item_name ?? 'Phelp Dodge #12 White' }}</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">{{ number_format($order->inventory_quantity->price ?? 33, 0) }}</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">{{ number_format($order->total_amount_price ?? 0, 0) }}</td>
+            <td style="border: 1px solid #000; padding: 2px;">Stainless Plug 1/2</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">14</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+        </tr>
+        
+        <!-- Remaining rows with all items -->
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px;">Phelp Dodge #14 White</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">20</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+            <td style="border: 1px solid #000; padding: 2px;">Flexcon 1/2</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">37</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+        </tr>
+        
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px;">Phelp Dodge #14 Black</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">20</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+            <td style="border: 1px solid #000; padding: 2px;">Flexcon Adapter 1/2</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">27</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+        </tr>
+        
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px;">Power Panel Box #4</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">165</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+            <td style="border: 1px solid #000; padding: 2px;">Flexcon 3/4</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;">5</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">53</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">265</td>
+        </tr>
+        
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px;">Metal clamp w screw tox</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;">10</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">5</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">50</td>
+            <td style="border: 1px solid #000; padding: 2px;">Flexcon Adapter 3/4</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">33</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+        </tr>
+        
+        <!-- Summary section rows -->
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px; font-weight: bold;">COMMISSION</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">1250</td>
+            <td style="border: 1px solid #000; padding: 2px;">Total</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">4750</td>
+        </tr>
+        
+        <!-- Total Row (Yellow) -->
+        <tr style="background-color: #ffff00;">
+            <td style="border: 1px solid #000; padding: 2px; font-weight: bold;">Total</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right; font-weight: bold;">{{ number_format($order->total_amount_price ?? 157591, 0) }}</td>
+            <td style="border: 1px solid #000; padding: 2px;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+        </tr>
+        
+        <!-- Grand Net Profit -->
+        <tr>
+            <td style="border: 1px solid #000; padding: 2px; font-weight: bold;">Grand Net Profit</td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right; font-weight: bold;">67659</td>
+            <td style="border: 1px solid #000; padding: 2px;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: center;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;"></td>
+            <td style="border: 1px solid #000; padding: 2px; text-align: right;">0</td>
+        </tr>
+    </table>
+
+    <!-- Bottom Summary Section -->
+    <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+        <div style="text-align: left;">
+            <strong>{{ $order->customer->customer_name ?? 'Romeo Remalante' }}</strong>
         </div>
-
-        <div class="info-section">
-            <div class="section-title">Customer Information</div>
-            <div class="info-row">
-                <div class="info-label">Name:</div>
-                <div class="info-value">{{ $order->customer->customer_name ?? 'N/A' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Address:</div>
-                <div class="info-value">{{ $order->customer->address ?? 'N/A' }}</div>
-            </div>
+        <div style="text-align: center;">
+            <div><strong>{{ number_format($order->total_amount_price ?? 230000, 0) }}-{{ number_format(($order->total_amount_price ?? 230000) * 0.7, 0) }} &nbsp;&nbsp; {{ number_format(($order->total_amount_price ?? 230000) / 21000, 1) }}kw</strong></div>
+            <div style="margin-top: 5px;"><strong>67659</strong></div>
         </div>
-    </div>
-
-    <div class="order-details">
-        <div class="section-title">Order Details</div>
-        <table class="details-table">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ $order->inventory_quantity->inventory->item_name ?? 'N/A' }}</td>
-                    <td>{{ $order->inventory_quantity->inventory->category->category_name ?? 'N/A' }}</td>
-                    <td>{{ $order->quantity_order }}</td>
-                    <td>₱{{ number_format($order->inventory_quantity->price ?? 0, 2) }}</td>
-                    <td>₱{{ number_format($order->total_amount_price, 2) }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="total-section">
-            <div class="total-amount">
-                Total Amount: ₱{{ number_format($order->total_amount_price, 2) }}
-            </div>
+        <div style="text-align: right;">
         </div>
-
-        <div style="margin-top: 20px;">
-            <div class="info-row">
-                <div class="info-label">Delivery Date:</div>
-                <div class="info-value">{{ \Carbon\Carbon::parse($order->date_deliver)->format('M d, Y') }}</div>
-            </div>
-            @if($order->reason)
-            <div class="info-row">
-                <div class="info-label">Notes:</div>
-                <div class="info-value">{{ $order->reason }}</div>
-            </div>
-            @endif
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>Generated on {{ $print_date }}</p>
-        <p>Thank you for your business!</p>
     </div>
 </body>
 </html>

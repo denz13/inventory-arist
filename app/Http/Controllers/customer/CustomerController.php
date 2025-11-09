@@ -202,7 +202,6 @@ class CustomerController extends Controller
                 'inventory_quantity_id' => 'required|exists:tbl_inventory_quantity,id',
                 'quantity_order' => 'required|integer|min:1',
                 'date_deliver' => 'required|date',
-                'status' => 'required|in:pending,confirmed,delivered,cancelled',
                 'reason' => 'nullable|string|max:500',
                 'total_amount_price' => 'required|numeric|min:0'
             ]);
@@ -223,16 +222,14 @@ class CustomerController extends Controller
                 'inventory_quantity_id' => $request->inventory_quantity_id,
                 'quantity_order' => $request->quantity_order,
                 'date_deliver' => $request->date_deliver,
-                'status' => $request->status,
+                'status' => 'delivered', // Automatic delivered status
                 'reason' => $request->reason,
                 'total_amount_price' => $request->total_amount_price
             ]);
 
-            // Update inventory quantity if order is confirmed
-            if ($request->status === 'confirmed') {
-                $inventoryQty->quantity -= $request->quantity_order;
-                $inventoryQty->save();
-            }
+            // Update inventory quantity automatically since status is delivered
+            $inventoryQty->quantity -= $request->quantity_order;
+            $inventoryQty->save();
 
             DB::commit();
 
@@ -308,13 +305,13 @@ class CustomerController extends Controller
 
             DB::beginTransaction();
 
-            // Restore previous quantity if order was confirmed
-            if ($oldStatus === 'confirmed') {
+            // Restore previous quantity if order was confirmed or delivered
+            if ($oldStatus === 'confirmed' || $oldStatus === 'delivered') {
                 $inventoryQty->quantity += $oldQuantity;
             }
 
             // Check if enough quantity available for new order
-            if ($request->status === 'confirmed' && $inventoryQty->quantity < $request->quantity_order) {
+            if (($request->status === 'confirmed' || $request->status === 'delivered') && $inventoryQty->quantity < $request->quantity_order) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Insufficient quantity available. Only ' . $inventoryQty->quantity . ' items available.'
@@ -331,8 +328,8 @@ class CustomerController extends Controller
                 'total_amount_price' => $request->total_amount_price
             ]);
 
-            // Update inventory quantity if new order is confirmed
-            if ($request->status === 'confirmed') {
+            // Update inventory quantity if new order is confirmed or delivered
+            if ($request->status === 'confirmed' || $request->status === 'delivered') {
                 $inventoryQty->quantity -= $request->quantity_order;
             }
 
@@ -370,8 +367,8 @@ class CustomerController extends Controller
             
             DB::beginTransaction();
 
-            // Restore inventory quantity if order was confirmed
-            if ($order->status === 'confirmed') {
+            // Restore inventory quantity if order was confirmed or delivered
+            if ($order->status === 'confirmed' || $order->status === 'delivered') {
                 $inventoryQty = $order->inventory_quantity;
                 $inventoryQty->quantity += $order->quantity_order;
                 $inventoryQty->save();

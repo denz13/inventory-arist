@@ -120,4 +120,38 @@ class ReportController extends Controller
         
         return $pdf->stream("Order-{$order->id}.pdf");
     }
+
+    public function printMultipleOrders(Request $request)
+    {
+        $orderIds = explode(',', $request->get('order_ids'));
+        $deliveryDate = $request->get('delivery_date');
+        
+        // Get all orders with their relationships
+        $orders = tbl_customer_order::with([
+            'customer',
+            'inventory_quantity.inventory.category'
+        ])->whereIn('id', $orderIds)->get();
+
+        if ($orders->isEmpty()) {
+            abort(404, 'Orders not found');
+        }
+
+        // Group orders by customer for better organization
+        $groupedOrders = $orders->groupBy('customer_id');
+        
+        $data = [
+            'groupedOrders' => $groupedOrders,
+            'deliveryDate' => $deliveryDate,
+            'company_name' => 'Inventory Management System',
+            'print_date' => now()->format('M d, Y H:i:s'),
+            'totalOrders' => $orders->count(),
+            'totalAmount' => $orders->sum('total_amount_price')
+        ];
+
+        $pdf = Pdf::loadView('reports.print_multiple_orders', $data);
+        $pdf->setPaper('A4', 'portrait');
+        
+        $dateFormatted = $deliveryDate === 'no-date' ? 'No-Date' : \Carbon\Carbon::parse($deliveryDate)->format('Y-m-d');
+        return $pdf->stream("Orders-{$dateFormatted}.pdf");
+    }
 }

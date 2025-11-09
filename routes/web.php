@@ -79,5 +79,6 @@ Route::middleware('auth')->group(function() {
     // Reports routes
     Route::get('reports/order', [App\Http\Controllers\reports\ReportController::class, 'orderReports'])->name('reports.order');
     Route::get('reports/order/{id}/print', [App\Http\Controllers\reports\ReportController::class, 'printOrder'])->name('reports.order.print');
+    Route::get('reports/orders/print-multiple', [App\Http\Controllers\reports\ReportController::class, 'printMultipleOrders'])->name('reports.orders.print-multiple');
     Route::get('reports', [App\Http\Controllers\reports\ReportController::class, 'index'])->name('reports.index');
 });

@@ -8,8 +8,8 @@ function printOrder(orderId) {
     // Create URL for PDF review
     const printUrl = `/reports/order/${orderId}/print`;
 
-    // Open the PDF in a new window/tab for review
-    const printWindow = window.open(printUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+    // Open the PDF in a new tab for review
+    const printWindow = window.open(printUrl, '_blank');
 
     if (printWindow) {
         printWindow.onload = function() {
@@ -23,6 +23,36 @@ function printOrder(orderId) {
         showNotification('error', 'Popup blocked. Please allow popups for this site.');
     }
 }
+
+// Print multiple orders by delivery date
+function printOrdersByDate(orderIds, deliveryDate) {
+    console.log('printOrdersByDate called with:', orderIds, deliveryDate);
+    
+    // Show loading notification
+    showNotification('info', 'Generating combined PDF...');
+
+    // Create URL for multiple orders PDF
+    const printUrl = `/reports/orders/print-multiple?order_ids=${orderIds.join(',')}&delivery_date=${deliveryDate}`;
+    console.log('Print URL:', printUrl);
+
+    // Open the PDF in a new tab for review
+    const printWindow = window.open(printUrl, '_blank');
+
+    if (printWindow) {
+        printWindow.onload = function() {
+            showNotification('success', 'Combined PDF opened for review!');
+        };
+
+        printWindow.onerror = function() {
+            showNotification('error', 'Error opening PDF. Please try again.');
+        };
+    } else {
+        showNotification('error', 'Popup blocked. Please allow popups for this site.');
+    }
+}
+
+// Make sure the function is available globally
+window.printOrdersByDate = printOrdersByDate;
 
 // Toggle order details function
 function toggleOrderDetails(customerId) {
@@ -147,33 +177,60 @@ function updateOrdersTable(groupedOrders) {
         detailsRow.id = `order-details-${groupedOrder.customer_id}`;
         detailsRow.className = 'hidden';
         
-        let ordersHtml = '';
+
+        // Group orders by delivery date
+        const ordersByDeliveryDate = {};
         groupedOrder.orders.forEach(order => {
-            ordersHtml += `
-                <tr>
-                    <td class="font-medium text-primary">#${order.id}</td>
-                    <td>${order.inventory_quantity?.inventory?.item_name || 'N/A'}</td>
-                    <td>${order.inventory_quantity?.inventory?.category?.category_name || 'N/A'}</td>
-                    <td class="text-center">${order.quantity_order || 0}</td>
-                    <td class="text-center text-green-600">₱${parseFloat(order.total_amount_price || 0).toFixed(2)}</td>
-                    <td class="text-center">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium ${statusClasses[order.status] || 'bg-gray-100 text-gray-800'}">
-                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <button class="btn btn-outline-primary btn-sm" onclick="printOrder(${order.id})" title="Print Order">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                        </button>
-                    </td>
-                </tr>
-            `;
+            const deliveryDate = order.delivery_date ? new Date(order.delivery_date).toISOString().split('T')[0] : 'no-date';
+            if (!ordersByDeliveryDate[deliveryDate]) {
+                ordersByDeliveryDate[deliveryDate] = [];
+            }
+            ordersByDeliveryDate[deliveryDate].push(order);
         });
 
-        detailsRow.innerHTML = `
-            <td colspan="9" class="bg-slate-50 p-0">
-                <div class="p-4">
-                    <h4 class="font-medium text-slate-700 mb-3">Order Details for ${groupedOrder.customer?.customer_name || 'N/A'}</h4>
+        let deliveryDateSections = '';
+        Object.keys(ordersByDeliveryDate).forEach(deliveryDate => {
+            const ordersForDate = ordersByDeliveryDate[deliveryDate];
+            const dateFormatted = deliveryDate === 'no-date' ? 'No Date Set' : new Date(deliveryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            
+            let ordersHtml = '';
+            ordersForDate.forEach(order => {
+                ordersHtml += `
+                    <tr>
+                        <td class="font-medium text-primary">#${order.id}</td>
+                        <td>${order.inventory_quantity?.inventory?.item_name || 'N/A'}</td>
+                        <td>${order.inventory_quantity?.inventory?.category?.category_name || 'N/A'}</td>
+                        <td class="text-center">${order.quantity_order || 0}</td>
+                        <td class="text-center text-green-600">₱${parseFloat(order.total_amount_price || 0).toFixed(2)}</td>
+                        <td class="text-center">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${statusClasses[order.status] || 'bg-gray-100 text-gray-800'}">
+                                ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-primary btn-sm" onclick="printOrder(${order.id})" title="Print Single Order">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            deliveryDateSections += `
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h5 class="font-medium text-slate-600">
+                            Delivery Date: ${dateFormatted}
+                        </h5>
+                        <button class="btn btn-outline-primary btn-sm print-orders-by-date" 
+                                data-order-ids='${JSON.stringify(ordersForDate.map(o => o.id))}' 
+                                data-delivery-date='${deliveryDate}' 
+                                title="Print All Orders for This Date">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer mr-1"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            Print All (${ordersForDate.length})
+                        </button>
+                    </div>
+                    
                     <div class="overflow-x-auto">
                         <table class="table table-sm">
                             <thead>
@@ -192,6 +249,15 @@ function updateOrdersTable(groupedOrders) {
                             </tbody>
                         </table>
                     </div>
+                </div>
+            `;
+        });
+
+        detailsRow.innerHTML = `
+            <td colspan="9" class="bg-slate-50 p-0">
+                <div class="p-4">
+                    <h4 class="font-medium text-slate-700 mb-3">Order Details for ${groupedOrder.customer?.customer_name || 'N/A'}</h4>
+                    ${deliveryDateSections}
                 </div>
             </td>
         `;
@@ -336,5 +402,22 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('date-from').value = thirtyDaysAgo.toISOString().split('T')[0];
     document.getElementById('date-to').value = today.toISOString().split('T')[0];
     
+    // Ensure functions are available globally
+    window.printOrdersByDate = printOrdersByDate;
+    window.printOrder = printOrder;
+    window.toggleOrderDetails = toggleOrderDetails;
+    
+    // Add event delegation for print orders by date buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.print-orders-by-date')) {
+            e.preventDefault();
+            const button = e.target.closest('.print-orders-by-date');
+            const orderIds = JSON.parse(button.getAttribute('data-order-ids'));
+            const deliveryDate = button.getAttribute('data-delivery-date');
+            printOrdersByDate(orderIds, deliveryDate);
+        }
+    });
+    
     console.log('Order Reports page initialized');
+    console.log('printOrdersByDate function available:', typeof window.printOrdersByDate);
 });
