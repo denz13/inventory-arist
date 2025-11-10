@@ -217,27 +217,42 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($groupedOrder['orders'] as $order)
-                                                <tr>
-                                                    <td class="font-medium text-primary">#{{ $order->id }}</td>
-                                                    <td>{{ $order->inventory_quantity->inventory->item_name ?? 'N/A' }}</td>
-                                                    <td>{{ $order->inventory_quantity->inventory->category->category_name ?? 'N/A' }}</td>
-                                                    <td class="text-center">{{ $order->quantity_order ?? 0 }}</td>
-                                                    <td class="text-center text-green-600">₱{{ number_format($order->total_amount_price ?? 0, 2) }}</td>
-                                                    <td class="text-center">
-                                                        <span class="px-2 py-1 rounded-full text-xs font-medium
-                                                            {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : 
-                                                               ($order->status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 
-                                                               ($order->status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800')) }}">
-                                                            {{ ucfirst($order->status) }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <button class="btn btn-outline-primary btn-sm" onclick="printOrder({{ $order->id }})" title="Print Order">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                                                        </button>
-                                                    </td>
-                                                </tr>
+                                                @php
+                                                    // Group orders by date only (ignore time)
+                                                    $ordersByDate = collect($groupedOrder['orders'])->groupBy(function($order) {
+                                                        return $order->created_at->format('Y-m-d');
+                                                    });
+                                                @endphp
+                                                @foreach($ordersByDate as $date => $ordersGroup)
+                                                    @foreach($ordersGroup as $index => $order)
+                                                    <tr>
+                                                        <td class="font-medium text-primary">#{{ $order->id }}</td>
+                                                        <td>{{ $order->inventory_quantity->inventory->item_name ?? 'N/A' }}</td>
+                                                        <td>{{ $order->inventory_quantity->inventory->category->category_name ?? 'N/A' }}</td>
+                                                        <td class="text-center">{{ $order->quantity_order ?? 0 }}</td>
+                                                        <td class="text-center text-green-600">₱{{ number_format($order->total_amount_price ?? 0, 2) }}</td>
+                                                        <td class="text-center">
+                                                            <span class="px-2 py-1 rounded-full text-xs font-medium
+                                                                {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : 
+                                                                   ($order->status === 'confirmed' ? 'bg-blue-100 text-blue-800' : 
+                                                                   ($order->status === 'cancelled' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800')) }}">
+                                                                {{ ucfirst($order->status) }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if($index === 0)
+                                                                <button class="btn btn-outline-primary btn-sm" onclick="printOrder({{ $order->id }})" title="Print Daily Orders ({{ $ordersGroup->count() }} items)">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                                                </button>
+                                                                @if($ordersGroup->count() > 1)
+                                                                    <div class="text-xs text-slate-500 mt-1">{{ $ordersGroup->count() }} orders</div>
+                                                                @endif
+                                                            @else
+                                                                <span class="text-xs text-slate-400">Same day</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
                                                 @endforeach
                                             </tbody>
                                         </table>

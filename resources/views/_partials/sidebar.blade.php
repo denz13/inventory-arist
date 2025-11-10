@@ -51,7 +51,7 @@
                         </a>
                         <ul class="">
                             <li>
-                                <a href="{{ route('customer.index') }}" class="side-menu">
+                                <a href="{{ route('customer.add') }}" class="side-menu">
                                     <div class="side-menu__icon"> <i data-lucide="activity"></i> </div>
                                     <div class="side-menu__title"> Add Customer </div>
                                 </a>

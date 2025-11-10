@@ -3,37 +3,25 @@
 namespace App\Http\Controllers\inventory;
 
 use App\Http\Controllers\Controller;
-use App\Models\tbl_inventory;
-use App\Models\tbl_inventory_quantity;
-use App\Models\tbl_category;
+use App\Models\inventory_items;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = tbl_inventory::with(['category', 'quantities']);
+        $query = inventory_items::query();
         
         // Handle search
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
                 $q->where('item_name', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%")
+                  ->orWhere('marked_as', 'like', "%{$searchTerm}%")
                   ->orWhere('status', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('category', function($categoryQuery) use ($searchTerm) {
-                      $categoryQuery->where('category_name', 'like', "%{$searchTerm}%");
-                  })
-                  ->orWhereHas('quantity', function($quantityQuery) use ($searchTerm) {
-                      $quantityQuery->where('quantity', 'like', "%{$searchTerm}%")
-                                   ->orWhere('note', 'like', "%{$searchTerm}%");
-                  });
+                  ->orWhere('qty', 'like', "%{$searchTerm}%")
+                  ->orWhere('price', 'like', "%{$searchTerm}%");
             });
-        }
-        
-        // Handle category filter
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
         }
         
         // Handle status filter
@@ -42,18 +30,16 @@ class InventoryController extends Controller
         }
         
         // Handle pagination
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', 15);
         $inventories = $query->orderBy('created_at', 'desc')->paginate($perPage);
         
-        // Get categories for filter dropdown
-        $categories = tbl_category::where('status', 'active')->get();
-        
-        // Get existing items with their IDs and categories for dropdown
-        $existingItems = tbl_inventory::with('category')->where('status', 'active')->get();
+        // Get existing items for dropdown (for modal)
+        $existingItems = inventory_items::where('status', 'active')->get();
+        $hasExistingData = $existingItems->count() > 0;
         
         // If it's an AJAX request, return JSON with table HTML
         if ($request->ajax()) {
-            $tableHtml = view('inventory.inventory', compact('inventories', 'categories', 'existingItems'))->render();
+            $tableHtml = view('inventory.inventory', compact('inventories', 'existingItems', 'hasExistingData'))->render();
             return response()->json([
                 'success' => true,
                 'data' => $inventories,
@@ -61,87 +47,71 @@ class InventoryController extends Controller
             ]);
         }
         
-        return view('inventory.inventory', compact('inventories', 'categories', 'existingItems'));
+        return view('inventory.inventory', compact('inventories', 'existingItems', 'hasExistingData'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'category_id' => 'nullable|exists:tbl_category,id',
-            'item_name' => 'nullable|string|max:255',
-            'existing_item_id' => 'nullable|exists:tbl_inventory,id',
-            'description' => 'nullable|string|max:500',
-            'status' => 'required|in:active,inactive',
-            'quantity' => 'required|integer|min:0',
+        // Dynamic validation based on marked_as
+        $rules = [
+            'qty' => 'required|integer|min:0',
             'price' => 'nullable|numeric|min:0',
-            'price_effective_date' => 'nullable|date',
-            'is_low_stocks' => 'boolean',
-            'note' => 'nullable|string|max:500',
-        ]);
+            'marked_as' => 'required|in:NEW,EXISTING',
+            'status' => 'required|in:active,inactive',
+        ];
 
-        // Custom validation: either item_name or existing_item_id must be provided
-        if (!$request->filled('item_name') && !$request->filled('existing_item_id')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Either item name or existing item must be selected'
-            ], 422);
+        // If marked as NEW, require new item name
+        if ($request->marked_as === 'NEW') {
+            $rules['item_name'] = 'required|string|max:255';
+        }
+        // If marked as EXISTING, require existing item selection
+        else if ($request->marked_as === 'EXISTING') {
+            $rules['existing_item_name'] = 'required|string|max:255';
         }
 
-        // If new item, category_id is required
-        if ($request->filled('item_name') && !$request->filled('category_id')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Category is required for new items'
-            ], 422);
-        }
+        $request->validate($rules);
 
         try {
-            \DB::beginTransaction();
+            // Determine item name based on marked_as
+            $itemName = $request->marked_as === 'NEW' 
+                ? $request->item_name 
+                : $request->existing_item_name;
 
-            if ($request->filled('existing_item_id')) {
-                // Find existing inventory item by ID
-                $inventory = tbl_inventory::findOrFail($request->existing_item_id);
-                
-                // Create new quantity record for existing item
-                tbl_inventory_quantity::create([
-                    'inventory_id' => $inventory->id,
-                    'quantity' => $request->quantity,
-                    'price' => $request->price,
-                    'price_effective_date' => $request->price_effective_date,
-                    'status' => 'active',
-                    'is_low_stocks' => $request->boolean('is_low_stocks'),
-                    'note' => $request->note,
-                ]);
-                
-            } else {
-                // Create new inventory item with new name
-                $inventory = tbl_inventory::create([
-                    'category_id' => $request->category_id,
-                    'item_name' => $request->item_name,
-                    'description' => $request->description,
-                    'status' => $request->status,
-                ]);
-
-                // Create inventory quantity record
-                tbl_inventory_quantity::create([
-                    'inventory_id' => $inventory->id,
-                    'quantity' => $request->quantity,
-                    'price' => $request->price,
-                    'price_effective_date' => $request->price_effective_date,
-                    'status' => 'active',
-                    'is_low_stocks' => $request->boolean('is_low_stocks'),
-                    'note' => $request->note,
-                ]);
+            // If marked as NEW, check for existing items with same name
+            if ($request->marked_as === 'NEW') {
+                $existingItem = inventory_items::where('item_name', $itemName)->first();
+                if ($existingItem) {
+                    // Update existing item to mark it as OLD
+                    $existingItem->update([
+                        'item_name' => $existingItem->item_name . ' - OLD',
+                        'marked_as' => 'OLD'
+                    ]);
+                    
+                    // Also update any other items with the same original name
+                    inventory_items::where('item_name', $itemName)
+                        ->where('id', '!=', $existingItem->id)
+                        ->update([
+                            'item_name' => $itemName . ' - OLD',
+                            'marked_as' => 'OLD'
+                        ]);
+                }
             }
 
-            \DB::commit();
+            // Create new inventory item
+            $inventory = inventory_items::create([
+                'item_name' => $itemName,
+                'qty' => $request->qty,
+                'price' => $request->price,
+                'marked_as' => $request->marked_as,
+                'status' => $request->status,
+            ]);
 
             // Check if it's an AJAX request
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Inventory item created successfully!',
-                    'data' => $inventory->load(['category', 'quantity'])
+                    'data' => $inventory
                 ]);
             }
 
@@ -149,8 +119,6 @@ class InventoryController extends Controller
             return redirect()->route('inventory.index')->with('success', 'Inventory item created successfully!');
 
         } catch (\Exception $e) {
-            \DB::rollback();
-            
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -165,13 +133,11 @@ class InventoryController extends Controller
     public function edit($id)
     {
         try {
-            $inventory = tbl_inventory::with(['category', 'quantity'])->findOrFail($id);
-            $categories = tbl_category::where('status', 'active')->get();
+            $inventory = inventory_items::findOrFail($id);
             
             return response()->json([
                 'success' => true,
-                'data' => $inventory,
-                'categories' => $categories
+                'data' => $inventory
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -183,65 +149,47 @@ class InventoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'category_id' => 'required|exists:tbl_category,id',
-            'item_name' => 'required_without:existing_item_name|string|max:255',
-            'existing_item_name' => 'nullable|required_without:item_name|string|max:255',
-            'description' => 'nullable|string|max:500',
-            'status' => 'required|in:active,inactive',
-            'quantity' => 'required|integer|min:0',
+        // Dynamic validation based on marked_as
+        $rules = [
+            'qty' => 'required|integer|min:0',
             'price' => 'nullable|numeric|min:0',
-            'price_effective_date' => 'nullable|date',
-            'is_low_stocks' => 'boolean',
-            'note' => 'nullable|string|max:500',
-        ]);
+            'marked_as' => 'required|in:NEW,EXISTING',
+            'status' => 'required|in:active,inactive',
+        ];
+
+        // If marked as NEW, require new item name
+        if ($request->marked_as === 'NEW') {
+            $rules['item_name'] = 'required|string|max:255';
+        }
+        // If marked as EXISTING, require existing item selection
+        else if ($request->marked_as === 'EXISTING') {
+            $rules['existing_item_name'] = 'required|string|max:255';
+        }
+
+        $request->validate($rules);
 
         try {
-            \DB::beginTransaction();
+            // Determine item name based on marked_as
+            $itemName = $request->marked_as === 'NEW' 
+                ? $request->item_name 
+                : $request->existing_item_name;
 
             // Find and update inventory item
-            $inventory = tbl_inventory::findOrFail($id);
-            $finalItemName = $request->filled('item_name')
-                ? $request->input('item_name')
-                : $request->input('existing_item_name');
-
+            $inventory = inventory_items::findOrFail($id);
             $inventory->update([
-                'category_id' => $request->category_id,
-                'item_name' => $finalItemName,
-                'description' => $request->description,
+                'item_name' => $itemName,
+                'qty' => $request->qty,
+                'price' => $request->price,
+                'marked_as' => $request->marked_as,
                 'status' => $request->status,
             ]);
-
-            // Update or create inventory quantity record
-            $quantityRecord = tbl_inventory_quantity::where('inventory_id', $id)->first();
-            if ($quantityRecord) {
-                $quantityRecord->update([
-                    'quantity' => $request->quantity,
-                    'price' => $request->price,
-                    'price_effective_date' => $request->price_effective_date,
-                    'is_low_stocks' => $request->boolean('is_low_stocks'),
-                    'note' => $request->note,
-                ]);
-            } else {
-                tbl_inventory_quantity::create([
-                    'inventory_id' => $id,
-                    'quantity' => $request->quantity,
-                    'price' => $request->price,
-                    'price_effective_date' => $request->price_effective_date,
-                    'status' => 'active',
-                    'is_low_stocks' => $request->boolean('is_low_stocks'),
-                    'note' => $request->note,
-                ]);
-            }
-
-            \DB::commit();
 
             // Check if it's an AJAX request
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Inventory item updated successfully!',
-                    'data' => $inventory->load(['category', 'quantity'])
+                    'data' => $inventory
                 ]);
             }
 
@@ -249,8 +197,6 @@ class InventoryController extends Controller
             return redirect()->route('inventory.index')->with('success', 'Inventory item updated successfully!');
 
         } catch (\Exception $e) {
-            \DB::rollback();
-            
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -265,18 +211,9 @@ class InventoryController extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            \DB::beginTransaction();
-
             // Find and delete inventory item
-            $inventory = tbl_inventory::findOrFail($id);
-            
-            // Delete related quantity records first
-            tbl_inventory_quantity::where('inventory_id', $id)->delete();
-            
-            // Delete inventory item
+            $inventory = inventory_items::findOrFail($id);
             $inventory->delete();
-
-            \DB::commit();
 
             // Check if it's an AJAX request
             if ($request->ajax()) {
@@ -290,8 +227,6 @@ class InventoryController extends Controller
             return redirect()->route('inventory.index')->with('success', 'Inventory item deleted successfully!');
 
         } catch (\Exception $e) {
-            \DB::rollback();
-            
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -300,91 +235,6 @@ class InventoryController extends Controller
             }
 
             return redirect()->back()->withErrors(['error' => 'Error deleting inventory item: ' . $e->getMessage()]);
-        }
-    }
-
-    // Quantity-specific methods
-    public function editQuantity($id)
-    {
-        try {
-            $quantity = tbl_inventory_quantity::findOrFail($id);
-            
-            return response()->json([
-                'success' => true,
-                'data' => $quantity
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error loading quantity data: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function updateQuantity(Request $request, $id)
-    {
-        $request->validate([
-            'quantity' => 'required|integer|min:0',
-            'price' => 'nullable|numeric|min:0',
-            'price_effective_date' => 'nullable|date',
-            'status' => 'required|in:active,inactive',
-            'is_low_stocks' => 'boolean',
-            'note' => 'nullable|string|max:500',
-        ]);
-
-        try {
-            \DB::beginTransaction();
-
-            $quantityRecord = tbl_inventory_quantity::findOrFail($id);
-            $quantityRecord->update([
-                'quantity' => $request->quantity,
-                'price' => $request->price,
-                'price_effective_date' => $request->price_effective_date,
-                'status' => $request->status,
-                'is_low_stocks' => $request->boolean('is_low_stocks'),
-                'note' => $request->note,
-            ]);
-
-            \DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Quantity updated successfully!',
-                'data' => $quantityRecord
-            ]);
-
-        } catch (\Exception $e) {
-            \DB::rollback();
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Error updating quantity: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function destroyQuantity($id)
-    {
-        try {
-            \DB::beginTransaction();
-
-            $quantityRecord = tbl_inventory_quantity::findOrFail($id);
-            $quantityRecord->delete();
-
-            \DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Quantity deleted successfully!'
-            ]);
-
-        } catch (\Exception $e) {
-            \DB::rollback();
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Error deleting quantity: ' . $e->getMessage()
-            ], 500);
         }
     }
 }

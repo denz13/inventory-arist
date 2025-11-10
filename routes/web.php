@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\dashboard\DashboardController;
 use App\Http\Controllers\inventory\InventoryController;
 use App\Http\Controllers\ledger\LedgerController;
-use App\Http\Controllers\customer\CustomerController;
+use App\Http\Controllers\customer\AddCustomerController;
 // use App\Http\Controllers\PageController;
 // use App\Http\Controllers\DarkModeController;
 // use App\Http\Controllers\ColorSchemeController;
@@ -42,6 +42,7 @@ Route::controller(AuthController::class)->middleware('loggedin')->group(function
 
 Route::middleware('auth')->group(function() {
     Route::get('/', [DashboardController::class, 'index'])->name('home');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::post('inventory', [InventoryController::class, 'store'])->name('inventory.store');
@@ -56,19 +57,6 @@ Route::middleware('auth')->group(function() {
     Route::get('ledger', [App\Http\Controllers\ledger\LedgerController::class, 'index'])->name('ledger.index');
     Route::get('ledger/{id}', [App\Http\Controllers\ledger\LedgerController::class, 'show'])->name('ledger.show');
 
-    // Customer-specific routes
-    Route::get('customer', [App\Http\Controllers\customer\CustomerController::class, 'index'])->name('customer.index');
-    Route::post('customer', [App\Http\Controllers\customer\CustomerController::class, 'store'])->name('customer.store');
-    Route::get('customer/{id}/edit', [App\Http\Controllers\customer\CustomerController::class, 'edit'])->name('customer.edit');
-    Route::put('customer/{id}', [App\Http\Controllers\customer\CustomerController::class, 'update'])->name('customer.update');
-    Route::delete('customer/{id}', [App\Http\Controllers\customer\CustomerController::class, 'destroy'])->name('customer.destroy');
-    
-    // Customer Order routes
-    Route::post('customer/order', [App\Http\Controllers\customer\CustomerController::class, 'storeOrder'])->name('customer.order.store');
-    Route::get('customer/order/{id}/edit', [App\Http\Controllers\customer\CustomerController::class, 'editOrder'])->name('customer.order.edit');
-    Route::put('customer/order/{id}', [App\Http\Controllers\customer\CustomerController::class, 'updateOrder'])->name('customer.order.update');
-    Route::delete('customer/order/{id}', [App\Http\Controllers\customer\CustomerController::class, 'destroyOrder'])->name('customer.order.destroy');
-
     // Categories routes
     Route::get('categories', [App\Http\Controllers\categories\CategoriesController::class, 'index'])->name('categories.categories');
     Route::post('categories', [App\Http\Controllers\categories\CategoriesController::class, 'store'])->name('categories.store');
@@ -80,4 +68,14 @@ Route::middleware('auth')->group(function() {
     Route::get('reports/order', [App\Http\Controllers\reports\ReportController::class, 'orderReports'])->name('reports.order');
     Route::get('reports/order/{id}/print', [App\Http\Controllers\reports\ReportController::class, 'printOrder'])->name('reports.order.print');
     Route::get('reports', [App\Http\Controllers\reports\ReportController::class, 'index'])->name('reports.index');
+
+    // Customer-specific routes
+    Route::get('customer', [App\Http\Controllers\customer\AddCustomerController::class, 'index'])->name('customer.add');
+    Route::post('customer', [App\Http\Controllers\customer\AddCustomerController::class, 'store'])->name('customer.store');
+    Route::get('customer/{id}/edit', [App\Http\Controllers\customer\AddCustomerController::class, 'edit'])->name('customer.edit');
+    Route::put('customer/{id}', [App\Http\Controllers\customer\AddCustomerController::class, 'update'])->name('customer.update');
+    Route::delete('customer/{id}', [App\Http\Controllers\customer\AddCustomerController::class, 'destroy'])->name('customer.destroy');
+    
+    // Customer Package/Order routes
+    Route::post('customer/package', [App\Http\Controllers\customer\AddCustomerController::class, 'storePackage'])->name('customer.package.store');
 });

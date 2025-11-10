@@ -8,12 +8,12 @@ function printOrder(orderId) {
     // Create URL for PDF review
     const printUrl = `/reports/order/${orderId}/print`;
 
-    // Open the PDF in a new window/tab for review
-    const printWindow = window.open(printUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+    // Open the PDF in a new tab instead of popup window
+    const printWindow = window.open(printUrl, '_blank');
 
     if (printWindow) {
         printWindow.onload = function() {
-            showNotification('success', 'PDF opened for review!');
+            showNotification('success', 'PDF opened in new tab!');
         };
 
         printWindow.onerror = function() {
